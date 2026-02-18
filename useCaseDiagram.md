@@ -5,6 +5,9 @@ This diagram shows all major use cases for the CampusOS platform, organized by t
 
 ```mermaid
 usecaseDiagram
+    %% Layout Direction
+    left to right direction
+
     actor Student
     actor Teacher
     actor Admin
@@ -57,8 +60,8 @@ usecaseDiagram
     %% Admin Relations
     Admin --> UC15
     Admin --> UC16
-    Admin --> UC17
     Admin --> UC14
+    Admin --> UC17
     Admin --> UC11
 ```
 
