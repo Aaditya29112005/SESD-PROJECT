@@ -4,7 +4,7 @@
 This diagram shows all major use cases for the CampusOS platform, organized by the three primary actors: **Student**, **Teacher**, and **Admin**. It highlights the functional boundaries of the system and the core services each actor interacts with.
 
 ```mermaid
-useCaseDiagram
+usecaseDiagram
     actor Student
     actor Teacher
     actor Admin
