@@ -33,6 +33,11 @@ export default defineConfig({
         target: 'http://localhost:4009',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/brain/, ''),
+      },
+      '/api/role-dashboard': {
+        target: 'http://localhost:4011',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/role-dashboard/, ''),
       }
     }
   }

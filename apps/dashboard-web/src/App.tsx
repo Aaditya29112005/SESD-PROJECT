@@ -164,7 +164,7 @@ const LiveBrainOverlay = () => {
   );
 };
 
-const Layout = ({ children, user, setUser }: { children: React.ReactNode, user: any, setUser: any }) => {
+const Layout = ({ children, user, setUser, role }: { children: React.ReactNode, user: any, setUser: any, role: string }) => {
   const handleLogout = () => {
     googleLogout();
     setUser(null);
@@ -184,14 +184,14 @@ const Layout = ({ children, user, setUser }: { children: React.ReactNode, user: 
         </div>
         
         <nav className="flex-1 space-y-3">
-          <SidebarItem to="/superadmin" icon={Zap} label="SaaS Control" />
-          <div className="h-px w-full bg-white/5 my-4"></div>
-          <SidebarItem to="/" icon={Activity} label="Intelligence" />
-          <SidebarItem to="/students" icon={Users} label="Student Graph" />
-          <SidebarItem to="/assignments" icon={BookOpen} label="Auto-Grading" />
-          <SidebarItem to="/timetable" icon={Calendar} label="Hyper-Scheduler" />
+          {role === 'superadmin' && <SidebarItem to="/superadmin" icon={Zap} label="SaaS Control" />}
+          {role === 'superadmin' && <div className="h-px w-full bg-white/5 my-4"></div>}
+          <SidebarItem to="/" icon={Activity} label="My Dashboard" />
+          {role !== 'student' && <SidebarItem to="/students" icon={Users} label="Student Graph" />}
+          {role !== 'student' && <SidebarItem to="/assignments" icon={BookOpen} label="Auto-Grading" />}
+          {role !== 'student' && <SidebarItem to="/timetable" icon={Calendar} label="Hyper-Scheduler" />}
           <SidebarItem to="/notifications" icon={Bell} label="Notif Brain" />
-          <SidebarItem to="/settings" icon={Settings} label="System Config" />
+          {role !== 'student' && <SidebarItem to="/settings" icon={Settings} label="System Config" />}
         </nav>
         
         <div className="mt-auto">
@@ -200,7 +200,7 @@ const Layout = ({ children, user, setUser }: { children: React.ReactNode, user: 
               <img src={user.picture || `https://ui-avatars.com/api/?name=${user.name}`} alt="avatar" className="w-10 h-10 rounded-xl" />
               <div className="flex-1 overflow-hidden">
                 <p className="text-sm font-bold truncate">{user.name}</p>
-                <p className="text-[10px] text-white/40 truncate">{user.email}</p>
+                <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest truncate">{role}</p>
               </div>
               <button onClick={handleLogout} className="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-lg">
                 <LogOut size={16} />
@@ -221,6 +221,114 @@ const Layout = ({ children, user, setUser }: { children: React.ReactNode, user: 
         <CampusGPT />
         <LiveBrainOverlay />
       </main>
+    </div>
+  );
+};
+
+// --- ROLE AWARE DASHBOARD ---
+const RoleAwareDashboard = ({ role }: { role: string }) => {
+  const [dashboardData, setDashboardData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const response = await fetch('/api/role-dashboard/', {
+          headers: { 'role': role }
+        });
+        const data = await response.json();
+        setDashboardData(data);
+      } catch (e) {
+        console.error("Failed to fetch role dashboard");
+      }
+    };
+    fetchDashboard();
+  }, [role]);
+
+  if (!dashboardData) return <div className="p-20 text-center animate-pulse text-xl font-black text-white/20 tracking-widest">LOADING AI BRAIN...</div>;
+
+  return (
+    <div className="p-12 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-500">
+      <header className="mb-12">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded uppercase tracking-widest">{role} VIEW</span>
+        </div>
+        <h1 className="text-5xl font-black tracking-tight mb-2">Personal AI Control Panel</h1>
+        <div className="mt-6 p-4 bg-indigo-500/10 border border-indigo-500/30 rounded-2xl inline-flex items-center gap-4">
+          <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <Zap className="text-white" size={20} />
+          </div>
+          <p className="text-white/90 text-lg font-bold">{dashboardData.ai_message}</p>
+        </div>
+      </header>
+
+      {/* Dynamic Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        {dashboardData.metrics?.map((stat: any, i: number) => (
+           <div key={i} className="bg-[#0f0f0f] border border-white/5 p-8 rounded-[2.5rem] hover:border-white/10 transition-colors">
+             <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em] mb-4">{stat.label}</p>
+             <h2 className={`text-4xl font-black ${stat.color}`}>{stat.value}</h2>
+           </div>
+        ))}
+      </div>
+
+      <h2 className="text-2xl font-black mb-6">AI Decisions & Insights</h2>
+      
+      {/* AI Card System */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        {dashboardData.ai_cards?.map((card: any, i: number) => (
+          <div key={i} className={`p-8 rounded-[2.5rem] border ${card.type === 'danger' ? 'bg-rose-500/5 border-rose-500/20' : card.type === 'warning' ? 'bg-amber-500/5 border-amber-500/20' : 'bg-indigo-500/5 border-indigo-500/20'} flex flex-col justify-between`}>
+            <div>
+              <h3 className={`text-xs font-black uppercase tracking-widest mb-4 ${card.type === 'danger' ? 'text-rose-400' : card.type === 'warning' ? 'text-amber-400' : 'text-indigo-400'}`}>{card.title}</h3>
+              <p className="text-xl font-medium text-white/90 mb-8">{card.content}</p>
+            </div>
+            {card.action && (
+              <button className={`self-start px-6 py-3 font-bold text-sm rounded-xl transition-transform hover:scale-105 shadow-xl ${card.type === 'danger' ? 'bg-rose-500 text-white shadow-rose-500/20' : card.type === 'warning' ? 'bg-amber-500 text-black shadow-amber-500/20' : 'bg-white text-black shadow-white/10'}`}>
+                {card.action}
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Role Specific Sections */}
+      {role === 'student' && dashboardData.today_plan && (
+        <div className="bg-[#0f0f0f] border border-white/5 rounded-[2.5rem] p-10">
+          <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
+            <div className="p-2 bg-indigo-500/20 rounded-xl"><Calendar className="text-indigo-400" size={24} /></div>
+            AI Daily Optimization Plan
+          </h2>
+          <div className="space-y-4">
+            {dashboardData.today_plan.map((plan: any, i: number) => (
+              <div key={i} className="flex items-center gap-6 p-5 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors">
+                <span className="text-xs font-black text-indigo-400 tracking-wider w-24">{plan.time}</span>
+                <p className="font-bold text-white/90 text-lg">{plan.task}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {role === 'instructor' && dashboardData.at_risk_students && (
+        <div className="bg-[#0f0f0f] border border-white/5 rounded-[2.5rem] p-10">
+          <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
+            <div className="p-2 bg-rose-500/20 rounded-xl"><AlertTriangle className="text-rose-400" size={24} /></div>
+            At-Risk Students
+          </h2>
+          <div className="space-y-4">
+            {dashboardData.at_risk_students.map((student: any, i: number) => (
+              <div key={i} className="flex justify-between items-center p-5 bg-rose-500/5 border border-rose-500/20 rounded-2xl hover:bg-rose-500/10 transition-colors">
+                <div>
+                  <p className="font-black text-lg">{student.name}</p>
+                  <p className="text-sm font-bold text-rose-400 mt-1">{student.issue}</p>
+                </div>
+                <button className="px-6 py-3 bg-rose-500 text-white text-sm font-black rounded-xl hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/20">
+                  {student.action}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -685,7 +793,7 @@ const SuperAdminPage = () => {
   );
 };
 
-const LoginPage = ({ onLogin }: { onLogin: (user: any) => void }) => {
+const LoginPage = ({ onLogin }: { onLogin: (user: any, role: string) => void }) => {
   return (
     <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 selection:bg-indigo-500/30">
       <div className="w-full max-w-md bg-[#0f0f0f] border border-white/10 p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
@@ -695,38 +803,29 @@ const LoginPage = ({ onLogin }: { onLogin: (user: any) => void }) => {
             <Zap className="text-white" size={32} fill="white" />
           </div>
         </div>
-        <h2 className="text-3xl font-black text-center mb-2">CampusOS X</h2>
-        <p className="text-white/40 text-center mb-10 text-sm">Sign in to access the Neural Dashboard</p>
+        <h2 className="text-3xl font-black text-center mb-2">CampusOS ∞</h2>
+        <p className="text-white/40 text-center mb-10 text-sm font-medium">Select your role to access your AI Control Panel</p>
         
-        <div className="flex justify-center mb-6">
-          <GoogleLogin
-            onSuccess={(credentialResponse) => {
-              if (credentialResponse.credential) {
-                const decoded = jwtDecode(credentialResponse.credential);
-                onLogin(decoded);
-              }
-            }}
-            onError={() => {
-              console.log('Login Failed');
-            }}
-            useOneTap
-            theme="filled_black"
-            shape="pill"
-          />
+        <div className="space-y-4">
+          <button 
+            onClick={() => onLogin({ name: 'Alex Mercer', email: 'alex@student.edu' }, 'student')} 
+            className="w-full bg-white/5 border border-white/10 py-4 rounded-2xl font-black text-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-3"
+          >
+            <Users size={18} className="text-white/60" /> Login as Student
+          </button>
+          <button 
+            onClick={() => onLogin({ name: 'Prof. Smith', email: 'smith@faculty.edu' }, 'instructor')} 
+            className="w-full bg-indigo-600/10 border border-indigo-500/30 text-indigo-400 py-4 rounded-2xl font-black text-sm hover:bg-indigo-600/20 transition-colors flex items-center justify-center gap-3"
+          >
+            <BookOpen size={18} className="text-indigo-400/60" /> Login as Instructor
+          </button>
+          <button 
+            onClick={() => onLogin({ name: 'System Admin', email: 'admin@campusos.ai' }, 'superadmin')} 
+            className="w-full bg-rose-500/10 border border-rose-500/30 text-rose-400 py-4 rounded-2xl font-black text-sm hover:bg-rose-500/20 transition-colors flex items-center justify-center gap-3"
+          >
+            <Zap size={18} className="text-rose-400/60" /> Login as Super Admin
+          </button>
         </div>
-
-        <div className="relative flex py-5 items-center">
-          <div className="flex-grow border-t border-white/10"></div>
-          <span className="flex-shrink-0 mx-4 text-white/20 text-xs font-bold uppercase">or Dev Mode</span>
-          <div className="flex-grow border-t border-white/10"></div>
-        </div>
-
-        <button 
-          onClick={() => onLogin({ name: 'Admin User', email: 'admin@campusos.ai' })} 
-          className="w-full bg-white/5 border border-white/10 py-3 rounded-xl font-bold text-sm hover:bg-white/10 transition-colors"
-        >
-          Bypass Login
-        </button>
       </div>
     </div>
   );
@@ -734,22 +833,24 @@ const LoginPage = ({ onLogin }: { onLogin: (user: any) => void }) => {
 
 function App() {
   const [user, setUser] = useState<any>(null);
+  const [role, setRole] = useState<string>('student');
 
   if (!user) {
-    return <LoginPage onLogin={setUser} />;
+    return <LoginPage onLogin={(u, r) => { setUser(u); setRole(r); }} />;
   }
 
   return (
     <Router>
-      <Layout user={user} setUser={setUser}>
+      <Layout user={user} setUser={setUser} role={role}>
         <Routes>
-          <Route path="/" element={<DashboardPage />} />
+          <Route path="/" element={<RoleAwareDashboard role={role} />} />
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/assignments" element={<AssignmentsPage />} />
           <Route path="/timetable" element={<TimetablePage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/superadmin" element={<SuperAdminPage />} />
+          <Route path="/legacy-dashboard" element={<DashboardPage />} />
           <Route path="*" element={<div className="p-20 text-center font-black text-white/10 uppercase tracking-[1em]">Module_Loading...</div>} />
         </Routes>
       </Layout>
