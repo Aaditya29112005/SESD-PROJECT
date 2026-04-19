@@ -97,8 +97,9 @@ const CampusGPT = () => {
   );
 };
 
-const LiveBrainOverlay = () => {
-  const [activeAlert, setActiveAlert] = useState<any>(null);
+// --- SHARED BRAIN FEED HOOK ---
+const useBrainFeed = () => {
+  const [brainEvents, setBrainEvents] = useState<any[]>([]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -106,65 +107,86 @@ const LiveBrainOverlay = () => {
         const response = await fetch('/api/brain/live-actions');
         const data = await response.json();
         if (data.actions && data.actions.length > 0) {
-          // Play a sound or show the first action
-          setActiveAlert(data.actions[0]);
-          // Auto dismiss after 10 seconds
-          setTimeout(() => setActiveAlert(null), 10000);
+          setBrainEvents(prev => [...data.actions, ...prev].slice(0, 5));
         }
-      } catch (e) {
-        // Silently fail if brain isn't running
-      }
+      } catch (e) { /* Brain not running locally — demo mode */ }
     }, 2000);
     return () => clearInterval(interval);
   }, []);
 
-  if (!activeAlert) return null;
+  return { brainEvents, clearEvents: () => setBrainEvents([]) };
+};
+
+// --- ROLE-AWARE LIVE BRAIN FEED (Embedded in Dashboard) ---
+const LiveBrainFeed = ({ role, brainEvents }: { role: string, brainEvents: any[] }) => {
+  const roleMessages: Record<string, (e: any) => string> = {
+    student: (e) => `⚠️ Your AI Guide: ${e.prediction}`,
+    instructor: (e) => `🧑‍🏫 Student Alert: ${e.student_name} — ${e.trigger}`,
+    superadmin: (e) => `🌍 System Event: Dropout risk rising in tenant campus. ${e.prediction}`,
+  };
+
+  if (brainEvents.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-      <div className="w-full max-w-2xl bg-[#0a0a0a] border-2 border-rose-500/50 rounded-3xl shadow-[0_0_100px_rgba(244,63,94,0.2)] overflow-hidden animate-in zoom-in-95 duration-500">
-        <div className="bg-rose-500/10 p-6 border-b border-rose-500/20 flex items-center gap-4">
-          <div className="w-12 h-12 bg-rose-500 rounded-full flex items-center justify-center shadow-lg shadow-rose-500/50 animate-pulse">
-            <AlertTriangle className="text-white" size={24} />
+    <div className="mb-10 space-y-4">
+      <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.8)]"></span>
+        LIVE BRAIN DECISIONS
+      </p>
+      {brainEvents.map((evt, i) => (
+        <div key={i} className="p-6 bg-rose-500/5 border border-rose-500/20 rounded-3xl flex items-start gap-5 animate-in slide-in-from-top-2 duration-500">
+          <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/30 flex-shrink-0 mt-0.5">
+            <Zap className="text-white" size={18} />
           </div>
-          <div>
-            <h2 className="text-2xl font-black text-rose-500 tracking-tight">AUTONOMOUS DECISION TRIGGERED</h2>
-            <p className="text-sm font-bold text-white/60">Campus Brain Engine | {new Date(activeAlert.timestamp * 1000).toLocaleTimeString()}</p>
-          </div>
-        </div>
-        <div className="p-8 space-y-6">
-          <div>
-            <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] mb-2">Event Detected</p>
-            <p className="text-lg text-white font-medium">{activeAlert.trigger} for <span className="font-black text-indigo-400">{activeAlert.student_name}</span></p>
-          </div>
-          <div className="p-4 bg-white/5 rounded-xl border border-white/10">
-            <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] mb-2">AI Prediction</p>
-            <p className="text-xl text-rose-400 font-black">{activeAlert.prediction}</p>
-          </div>
-          <div>
-            <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] mb-3">Autonomous Actions Executed</p>
-            <div className="space-y-3">
-              {activeAlert.actions_taken.map((action: string, i: number) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
-                  <p className="text-sm font-medium text-white/80">{action}</p>
-                </div>
+          <div className="flex-1">
+            <p className="font-black text-white text-lg mb-2">
+              {(roleMessages[role] || roleMessages['student'])(evt)}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {evt.actions_taken?.map((a: string, j: number) => (
+                <span key={j} className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black rounded-full uppercase tracking-wider">
+                  ✓ {a}
+                </span>
               ))}
             </div>
           </div>
-          <button 
-            onClick={() => setActiveAlert(null)}
-            className="w-full mt-4 py-4 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold transition-colors"
-          >
-            Acknowledge & Close
-          </button>
+          <span className="text-[10px] text-white/20 font-bold flex-shrink-0">
+            {new Date(evt.timestamp * 1000).toLocaleTimeString()}
+          </span>
         </div>
-      </div>
+      ))}
     </div>
   );
 };
 
-const Layout = ({ children, user, setUser, role }: { children: React.ReactNode, user: any, setUser: any, role: string }) => {
+// --- DEMO ROLE SWITCHER ---
+const DemoRoleSwitcher = ({ role, setRole }: { role: string, setRole: (r: string) => void }) => {
+  const roles = [
+    { id: 'student', label: '🎓 Student', color: 'hover:bg-white/10' },
+    { id: 'instructor', label: '👨‍🏫 Instructor', color: 'hover:bg-indigo-500/20' },
+    { id: 'superadmin', label: '👑 Super Admin', color: 'hover:bg-rose-500/20' },
+  ];
+  return (
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[90] flex items-center gap-1 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-1 shadow-2xl">
+      <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] px-3">DEMO</span>
+      {roles.map(r => (
+        <button
+          key={r.id}
+          onClick={() => setRole(r.id)}
+          className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${
+            role === r.id
+              ? 'bg-white text-black shadow-lg'
+              : `text-white/50 ${r.color}`
+          }`}
+        >
+          {r.label}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+const Layout = ({ children, user, setUser, role, setRole }: { children: React.ReactNode, user: any, setUser: any, role: string, setRole: (r: string) => void }) => {
   const handleLogout = () => {
     googleLogout();
     setUser(null);
@@ -219,14 +241,14 @@ const Layout = ({ children, user, setUser, role }: { children: React.ReactNode, 
       <main className="flex-1 relative">
         {children}
         <CampusGPT />
-        <LiveBrainOverlay />
+        <DemoRoleSwitcher role={role} setRole={setRole} />
       </main>
     </div>
   );
 };
 
 // --- ROLE AWARE DASHBOARD ---
-const RoleAwareDashboard = ({ role }: { role: string }) => {
+const RoleAwareDashboard = ({ role, brainEvents }: { role: string, brainEvents: any[] }) => {
   const [dashboardData, setDashboardData] = useState<any>(null);
 
   const DEMO_DATA: Record<string, any> = {
@@ -315,6 +337,9 @@ const RoleAwareDashboard = ({ role }: { role: string }) => {
           <p className="text-white/90 text-lg font-bold">{dashboardData.ai_message}</p>
         </div>
       </header>
+
+      {/* 🧠 LIVE BRAIN DECISIONS - embedded at top */}
+      <LiveBrainFeed role={role} brainEvents={brainEvents} />
 
       {/* Dynamic Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -889,6 +914,7 @@ const LoginPage = ({ onLogin }: { onLogin: (user: any, role: string) => void }) 
 function App() {
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState<string>('student');
+  const { brainEvents } = useBrainFeed();
 
   if (!user) {
     return <LoginPage onLogin={(u, r) => { setUser(u); setRole(r); }} />;
@@ -896,9 +922,9 @@ function App() {
 
   return (
     <Router>
-      <Layout user={user} setUser={setUser} role={role}>
+      <Layout user={user} setUser={setUser} role={role} setRole={setRole}>
         <Routes>
-          <Route path="/" element={<RoleAwareDashboard role={role} />} />
+          <Route path="/" element={<RoleAwareDashboard role={role} brainEvents={brainEvents} />} />
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/assignments" element={<AssignmentsPage />} />
           <Route path="/timetable" element={<TimetablePage />} />
