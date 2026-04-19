@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Activity, Users, AlertTriangle, Cpu, TrendingUp, Calendar, BookOpen, Bell, Settings, MessageSquare, Send, Zap } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
+import { Activity, Users, AlertTriangle, Cpu, TrendingUp, Calendar, BookOpen, Bell, Settings, MessageSquare, Send, Zap, LogOut } from 'lucide-react';
+import { GoogleLogin, googleLogout } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 // --- SHARED COMPONENTS ---
 const SidebarItem = ({ to, icon: Icon, label }: any) => {
@@ -32,7 +34,7 @@ const CampusGPT = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:4007/chat', { 
+      const response = await fetch('/api/chat/chat', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: 'std_101', message: input }),
@@ -95,42 +97,63 @@ const CampusGPT = () => {
   );
 };
 
-const Layout = ({ children }: { children: React.ReactNode }) => (
-  <div className="min-h-screen bg-[#050505] flex text-white antialiased selection:bg-indigo-500/30">
-    <aside className="w-72 border-r border-white/5 flex flex-col p-8 sticky top-0 h-screen">
-      <div className="flex items-center gap-3 mb-12">
-        <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/20">
-          <Zap className="text-white" size={26} fill="white" />
+const Layout = ({ children, user, setUser }: { children: React.ReactNode, user: any, setUser: any }) => {
+  const handleLogout = () => {
+    googleLogout();
+    setUser(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#050505] flex text-white antialiased selection:bg-indigo-500/30">
+      <aside className="w-72 border-r border-white/5 flex flex-col p-8 sticky top-0 h-screen">
+        <div className="flex items-center gap-3 mb-12">
+          <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/20">
+            <Zap className="text-white" size={26} fill="white" />
+          </div>
+          <div>
+            <span className="font-black text-2xl tracking-tighter block leading-none">CAMPUSOS</span>
+            <span className="text-[10px] font-bold text-indigo-500 tracking-[0.3em]">VERSION X</span>
+          </div>
         </div>
-        <div>
-          <span className="font-black text-2xl tracking-tighter block leading-none">CAMPUSOS</span>
-          <span className="text-[10px] font-bold text-indigo-500 tracking-[0.3em]">VERSION X</span>
+        
+        <nav className="flex-1 space-y-3">
+          <SidebarItem to="/" icon={Activity} label="Intelligence" />
+          <SidebarItem to="/students" icon={Users} label="Student Graph" />
+          <SidebarItem to="/assignments" icon={BookOpen} label="Auto-Grading" />
+          <SidebarItem to="/timetable" icon={Calendar} label="Hyper-Scheduler" />
+          <SidebarItem to="/notifications" icon={Bell} label="Notif Brain" />
+          <SidebarItem to="/settings" icon={Settings} label="System Config" />
+        </nav>
+        
+        <div className="mt-auto">
+          {user && (
+            <div className="mb-4 flex items-center gap-3 p-3 bg-white/5 rounded-2xl">
+              <img src={user.picture || `https://ui-avatars.com/api/?name=${user.name}`} alt="avatar" className="w-10 h-10 rounded-xl" />
+              <div className="flex-1 overflow-hidden">
+                <p className="text-sm font-bold truncate">{user.name}</p>
+                <p className="text-[10px] text-white/40 truncate">{user.email}</p>
+              </div>
+              <button onClick={handleLogout} className="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-lg">
+                <LogOut size={16} />
+              </button>
+            </div>
+          )}
+          <div className="p-5 bg-indigo-600/5 border border-indigo-500/10 rounded-[2rem]">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+              <p className="text-[9px] text-indigo-400 font-black uppercase tracking-[0.2em]">MESH_ACTIVE</p>
+            </div>
+            <p className="text-xs font-medium text-white/80 leading-relaxed">Neural Engine processing 12.4k events/sec</p>
+          </div>
         </div>
-      </div>
-      
-      <nav className="flex-1 space-y-3">
-        <SidebarItem to="/" icon={Activity} label="Intelligence" />
-        <SidebarItem to="/students" icon={Users} label="Student Graph" />
-        <SidebarItem to="/assignments" icon={BookOpen} label="Auto-Grading" />
-        <SidebarItem to="/timetable" icon={Calendar} label="Hyper-Scheduler" />
-        <SidebarItem to="/notifications" icon={Bell} label="Notif Brain" />
-        <SidebarItem to="/settings" icon={Settings} label="System Config" />
-      </nav>
-      
-      <div className="mt-auto p-5 bg-indigo-600/5 border border-indigo-500/10 rounded-[2rem]">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
-          <p className="text-[9px] text-indigo-400 font-black uppercase tracking-[0.2em]">MESH_ACTIVE</p>
-        </div>
-        <p className="text-xs font-medium text-white/80 leading-relaxed">Neural Engine processing 12.4k events/sec</p>
-      </div>
-    </aside>
-    <main className="flex-1 relative">
-      {children}
-      <CampusGPT />
-    </main>
-  </div>
-);
+      </aside>
+      <main className="flex-1 relative">
+        {children}
+        <CampusGPT />
+      </main>
+    </div>
+  );
+};
 
 // --- PAGES ---
 const DashboardPage = () => {
@@ -148,9 +171,9 @@ const DashboardPage = () => {
     const newEvent = { time: 'Just now', text: 'AI Analyzing Student std_101 Check-in...', type: 'AI' };
     setEvents(prev => [newEvent, ...prev.slice(0, 4)]);
 
-    // 3. BACKEND: Hit the real microservice
+    // 3. BACKEND: Hit the real microservice via proxy
     try {
-      await fetch('http://localhost:4002/check-in', {
+      await fetch('/api/attendance/check-in', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ student_id: 'std_101', course_id: 'cs_301', latitude: 37.77, longitude: -122.41, device_id: 'iphone_15' })
@@ -262,10 +285,63 @@ const StudentsPage = () => (
     </div>
 );
 
+const LoginPage = ({ onLogin }: { onLogin: (user: any) => void }) => {
+  return (
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 selection:bg-indigo-500/30">
+      <div className="w-full max-w-md bg-[#0f0f0f] border border-white/10 p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/10 blur-[80px] pointer-events-none"></div>
+        <div className="flex justify-center mb-8">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center shadow-xl shadow-indigo-500/20">
+            <Zap className="text-white" size={32} fill="white" />
+          </div>
+        </div>
+        <h2 className="text-3xl font-black text-center mb-2">CampusOS X</h2>
+        <p className="text-white/40 text-center mb-10 text-sm">Sign in to access the Neural Dashboard</p>
+        
+        <div className="flex justify-center mb-6">
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              if (credentialResponse.credential) {
+                const decoded = jwtDecode(credentialResponse.credential);
+                onLogin(decoded);
+              }
+            }}
+            onError={() => {
+              console.log('Login Failed');
+            }}
+            useOneTap
+            theme="filled_black"
+            shape="pill"
+          />
+        </div>
+
+        <div className="relative flex py-5 items-center">
+          <div className="flex-grow border-t border-white/10"></div>
+          <span className="flex-shrink-0 mx-4 text-white/20 text-xs font-bold uppercase">or Dev Mode</span>
+          <div className="flex-grow border-t border-white/10"></div>
+        </div>
+
+        <button 
+          onClick={() => onLogin({ name: 'Admin User', email: 'admin@campusos.ai' })} 
+          className="w-full bg-white/5 border border-white/10 py-3 rounded-xl font-bold text-sm hover:bg-white/10 transition-colors"
+        >
+          Bypass Login
+        </button>
+      </div>
+    </div>
+  );
+};
+
 function App() {
+  const [user, setUser] = useState<any>(null);
+
+  if (!user) {
+    return <LoginPage onLogin={setUser} />;
+  }
+
   return (
     <Router>
-      <Layout>
+      <Layout user={user} setUser={setUser}>
         <Routes>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/students" element={<StudentsPage />} />
