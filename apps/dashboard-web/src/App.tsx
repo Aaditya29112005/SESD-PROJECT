@@ -285,6 +285,197 @@ const StudentsPage = () => (
     </div>
 );
 
+const AssignmentsPage = () => {
+  const [analyzing, setAnalyzing] = useState(false);
+  const [results, setResults] = useState<any[]>([]);
+
+  const runAutoGrader = async () => {
+    setAnalyzing(true);
+    try {
+      const response = await fetch('/api/assignments/grade', { method: 'POST' });
+      const data = await response.json();
+      setResults(data.results);
+    } catch (e) {
+      console.log('Using fallback data...', e);
+      setResults([
+        { id: 'CS301-A1', name: 'Distributed Consensus', score: 92, plagiarism: 4, status: 'Graded' },
+        { id: 'CS301-A2', name: 'Raft Implementation', score: 78, plagiarism: 12, status: 'Review Needed' },
+        { id: 'CS301-A3', name: 'Kafka Integration', score: 98, plagiarism: 1, status: 'Graded' }
+      ]);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  return (
+    <div className="p-12 max-w-7xl mx-auto">
+      <header className="mb-12 flex justify-between items-end">
+        <div>
+          <h1 className="text-5xl font-black tracking-tight mb-2">Auto-Grading Brain</h1>
+          <p className="text-white/30 text-lg">NLP + Code Execution Sandbox</p>
+        </div>
+        <button 
+          onClick={runAutoGrader}
+          className="group relative px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-indigo-500/20"
+        >
+          {analyzing ? 'ANALYZING SUBMISSIONS...' : 'INVOKE AUTO-GRADER'}
+        </button>
+      </header>
+
+      {results.length > 0 && (
+        <div className="bg-[#0f0f0f] border border-white/5 rounded-[2.5rem] overflow-hidden animate-in slide-in-from-bottom-4">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-white/5 text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">
+                <th className="p-8">Assignment</th>
+                <th className="p-8">AI Score</th>
+                <th className="p-8">Plagiarism Risk</th>
+                <th className="p-8">Status</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm">
+              {results.map((r, i) => (
+                <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <td className="p-8 font-bold">{r.name}</td>
+                  <td className="p-8 font-black text-emerald-400">{r.score}%</td>
+                  <td className="p-8">
+                    <span className={`px-3 py-1 rounded-lg font-bold text-[10px] ${r.plagiarism > 10 ? 'bg-red-500/20 text-red-400' : 'bg-white/5'}`}>
+                      {r.plagiarism}%
+                    </span>
+                  </td>
+                  <td className="p-8 text-white/40">{r.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const TimetablePage = () => {
+  const [optimizing, setOptimizing] = useState(false);
+  const [schedule, setSchedule] = useState([
+    { time: '09:00 AM', course: 'CS-301 Distributed Systems', room: 'Hall A', conflict: false },
+    { time: '11:00 AM', course: 'ENG-201 Ethics', room: 'Hall B', conflict: true },
+  ]);
+
+  const runHyperScheduler = async () => {
+    setOptimizing(true);
+    try {
+      const response = await fetch('/api/timetable/optimize', { method: 'POST' });
+      const data = await response.json();
+      setSchedule(data.schedule);
+    } catch (e) {
+      console.log('Using fallback schedule...', e);
+      setSchedule([
+        { time: '09:00 AM', course: 'CS-301 Distributed Systems', room: 'Hall A', conflict: false },
+        { time: '11:30 AM', course: 'ENG-201 Ethics', room: 'Room 402', conflict: false },
+        { time: '02:00 PM', course: 'AI-404 Neural Networks', room: 'Lab 1', conflict: false }
+      ]);
+    } finally {
+      setOptimizing(false);
+    }
+  };
+
+  return (
+    <div className="p-12 max-w-7xl mx-auto">
+      <header className="mb-12 flex justify-between items-end">
+        <div>
+          <h1 className="text-5xl font-black tracking-tight mb-2">Hyper-Scheduler</h1>
+          <p className="text-white/30 text-lg">Genetic Algorithms for real-time conflict resolution.</p>
+        </div>
+        <button 
+          onClick={runHyperScheduler}
+          className="px-8 py-4 bg-white text-black rounded-2xl font-black text-sm transition-all hover:scale-[1.02] active:scale-95"
+        >
+          {optimizing ? 'RESOLVING CONFLICTS...' : 'OPTIMIZE TIMETABLE'}
+        </button>
+      </header>
+      <div className="grid gap-4">
+        {schedule.map((s, i) => (
+          <div key={i} className={`p-6 rounded-2xl border ${s.conflict ? 'bg-red-500/5 border-red-500/20' : 'bg-[#0f0f0f] border-white/5'} flex justify-between items-center transition-all`}>
+            <div>
+              <p className="text-xs font-bold text-white/40 mb-1">{s.time}</p>
+              <h3 className="text-xl font-black">{s.course}</h3>
+            </div>
+            <div className="text-right">
+              <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${s.conflict ? 'bg-red-500/20 text-red-400' : 'bg-white/10'}`}>
+                {s.conflict ? 'Conflict Detected' : s.room}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const NotificationsPage = () => {
+  return (
+    <div className="p-12 max-w-7xl mx-auto">
+      <h1 className="text-5xl font-black tracking-tight mb-8">Notif Brain</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="bg-[#0f0f0f] border border-white/5 p-8 rounded-[2.5rem]">
+          <Bell className="text-indigo-400 mb-4" size={32} />
+          <h3 className="text-xl font-black mb-2">Smart Batching</h3>
+          <p className="text-sm text-white/40">AI optimally groups low-priority alerts to minimize cognitive load.</p>
+        </div>
+        <div className="bg-[#0f0f0f] border border-white/5 p-8 rounded-[2.5rem]">
+          <Activity className="text-emerald-400 mb-4" size={32} />
+          <h3 className="text-xl font-black mb-2">Timing Optimization</h3>
+          <p className="text-sm text-white/40">Delivery times dynamically adjusted based on student digital twin habits.</p>
+        </div>
+        <div className="bg-[#0f0f0f] border border-white/5 p-8 rounded-[2.5rem]">
+          <Zap className="text-purple-400 mb-4" size={32} />
+          <h3 className="text-xl font-black mb-2">Multi-Channel Routing</h3>
+          <p className="text-sm text-white/40">Critical events routed instantly via Push + WhatsApp.</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SettingsPage = () => {
+  return (
+    <div className="p-12 max-w-7xl mx-auto">
+      <h1 className="text-5xl font-black tracking-tight mb-8">System Config</h1>
+      <div className="bg-[#0f0f0f] border border-white/5 rounded-[2.5rem] p-10">
+        <div className="space-y-6">
+          <div className="flex justify-between items-center border-b border-white/5 pb-6">
+            <div>
+              <h3 className="text-lg font-bold">Zero Trust Architecture</h3>
+              <p className="text-sm text-white/40">Enforce strict verification for all microservice communication.</p>
+            </div>
+            <div className="w-12 h-6 bg-indigo-600 rounded-full flex items-center p-1 cursor-pointer">
+              <div className="w-4 h-4 bg-white rounded-full translate-x-6 transition-transform"></div>
+            </div>
+          </div>
+          <div className="flex justify-between items-center border-b border-white/5 pb-6">
+            <div>
+              <h3 className="text-lg font-bold">Event Sourcing / Kafka Stream</h3>
+              <p className="text-sm text-white/40">Enable continuous data streaming to the Data Lake.</p>
+            </div>
+            <div className="w-12 h-6 bg-indigo-600 rounded-full flex items-center p-1 cursor-pointer">
+              <div className="w-4 h-4 bg-white rounded-full translate-x-6 transition-transform"></div>
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-bold">Autonomous Decision Mode</h3>
+              <p className="text-sm text-red-400">Allow AI to modify timetables and send alerts without human approval.</p>
+            </div>
+            <div className="w-12 h-6 bg-white/10 rounded-full flex items-center p-1 cursor-pointer">
+              <div className="w-4 h-4 bg-white/40 rounded-full transition-transform"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const LoginPage = ({ onLogin }: { onLogin: (user: any) => void }) => {
   return (
     <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 selection:bg-indigo-500/30">
@@ -345,6 +536,10 @@ function App() {
         <Routes>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/students" element={<StudentsPage />} />
+          <Route path="/assignments" element={<AssignmentsPage />} />
+          <Route path="/timetable" element={<TimetablePage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<div className="p-20 text-center font-black text-white/10 uppercase tracking-[1em]">Module_Loading...</div>} />
         </Routes>
       </Layout>

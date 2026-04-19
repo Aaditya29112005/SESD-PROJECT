@@ -18,6 +18,16 @@ export default defineConfig({
         target: 'http://localhost:4007',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/chat/, ''),
+      },
+      '/api/assignments': {
+        target: 'http://localhost:4003',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/assignments/, ''),
+      },
+      '/api/timetable': {
+        target: 'http://localhost:4005',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/timetable/, ''),
       }
     }
   }
