@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import json
 import uuid
 import time
-from aiokafka import AOKafkaProducer
+from aiokafka import AIOKafkaProducer
 
 # CampusOS X - Attendance Intelligence Service
 # This service tracks attendance and emits events for AI analysis.
@@ -29,7 +29,7 @@ class AttendanceCheckIn(BaseModel):
     device_id: str
 
 async def send_event(event: dict):
-    producer = AOKafkaProducer(bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS)
+    producer = AIOKafkaProducer(bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS)
     await producer.start()
     try:
         await producer.send_and_wait(KAFKA_TOPIC, json.dumps(event).encode("utf-8"))

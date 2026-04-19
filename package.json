@@ -7,9 +7,10 @@
     "dev:gateway": "npm start --prefix apps/gateway",
     "dev:auth": "npm start --prefix apps/auth-service",
     "dev:dashboard": "npm run dev --prefix apps/dashboard-web",
-    "dev:attendance": "cd apps/attendance-service && uvicorn main:app --port 4002 --reload",
-    "dev:ai": "python3 apps/ai-orchestrator/brain.py",
-    "dev": "concurrently \"npm run dev:gateway\" \"npm run dev:auth\" \"npm run dev:dashboard\" \"npm run dev:attendance\" \"npm run dev:ai\"",
+    "dev:attendance": "cd apps/attendance-service && ../../venv/bin/uvicorn main:app --port 4002 --reload",
+    "dev:gpt": "cd apps/campus-gpt && ../../venv/bin/uvicorn main:app --port 4007 --reload",
+    "dev:ai": "../../venv/bin/python apps/ai-orchestrator/brain.py",
+    "dev": "concurrently \"npm run dev:gateway\" \"npm run dev:auth\" \"npm run dev:dashboard\" \"npm run dev:attendance\" \"npm run dev:gpt\"",
     "infra": "cd infra/docker && docker-compose up -d"
   },
   "devDependencies": {

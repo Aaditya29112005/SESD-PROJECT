@@ -1,54 +1,44 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Optional
-import time
-
-# CampusOS X - CampusGPT Service
-# The fine-tuned LLM advisor for students and faculty.
+import asyncio
+import random
 
 app = FastAPI(title="CampusOS X - CampusGPT")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class ChatRequest(BaseModel):
     user_id: str
     message: str
-    context_tokens: Optional[List[str]] = []
 
-class ChatResponse(BaseModel):
-    response: str
-    suggestions: List[str]
-    processing_time: float
-
-@app.post("/chat", response_model=ChatResponse)
-async def chat_with_advisor(request: ChatRequest):
-    """
-    Multilingual, context-aware AI advisor.
-    In production, this would use a fine-tuned Llama-3 or GPT-4o model.
-    """
-    start_time = time.time()
+@app.post("/chat")
+async def chat(request: ChatRequest):
+    # Simulate processing time for LLM
+    await asyncio.sleep(1)
     
-    # SIMULATED LLM LOGIC:
-    # 1. Fetch Student Digital Twin from Neo4j
-    # 2. Augment prompt with historical performance data (RAG)
-    # 3. Generate response
+    responses = [
+        "Analyzing your trajectory... Based on your Digital Twin, I recommend focusing on 'Distributed Systems' this week.",
+        "Your attendance is optimal. I noticed a potential conflict in your timetable tomorrow; shall I invoke the Hyper-Scheduler?",
+        "I have reviewed your recent assignments. Your structural integrity is excellent, but consider deepening your analysis on graph algorithms.",
+        "The Autonomous Brain predicts a 94% success rate for your current path. Keep up the momentum!"
+    ]
     
-    user_message = request.message.lower()
-    
-    if "attendance" in user_message:
-        response = "Your attendance is currently at 78.5%. You are 1.5% away from the minimum requirement. I suggest attending the next 'Advanced Algorithms' lecture on Tuesday."
-        suggestions = ["View Timetable", "Contact Professor", "Set Reminder"]
-    elif "assignment" in user_message:
-        response = "You have 3 pending assignments. Your 'Distributed Systems' report is due in 14 hours. Would you like a summary of the requirements?"
-        suggestions = ["Summarize Requirements", "Extend Deadline Request", "AI Writing Assistant"]
+    # Simple keyword matching
+    if "attendance" in request.message.lower():
+        reply = "Your current engagement velocity is strong. The Mesh shows you checked in successfully to your last 5 sessions."
+    elif "risk" in request.message.lower() or "dropout" in request.message.lower():
+        reply = "Your risk score is extremely low (2.4%). The Neural Engine confirms your trajectory is stable."
     else:
-        response = "Hello! I am your CampusOS advisor. I can help you manage your schedules, track your performance, or answer questions about university policies."
-        suggestions = ["Check My Risk Level", "Optimize My Timetable", "Academic Support"]
+        reply = random.choice(responses)
+        
+    return {"response": reply}
 
-    return ChatResponse(
-        response=response,
-        suggestions=suggestions,
-        processing_time=time.time() - start_time
-    )
-
-@app.get("/health")
-def health():
-    return {"status": "AI Model Loaded", "model": "CampusOS-Llama-3-FineTuned"}
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=4007)
