@@ -11,8 +11,8 @@
     "dev:assignments": "cd apps/assignment-service && ../../venv/bin/uvicorn main:app --port 4003 --reload",
     "dev:timetable": "cd apps/timetable-service && ../../venv/bin/uvicorn main:app --port 4005 --reload",
     "dev:gpt": "cd apps/campus-gpt && ../../venv/bin/uvicorn main:app --port 4007 --reload",
-    "dev:ai": "../../venv/bin/python apps/ai-orchestrator/brain.py",
-    "dev": "concurrently \"npm run dev:gateway\" \"npm run dev:auth\" \"npm run dev:dashboard\" \"npm run dev:attendance\" \"npm run dev:assignments\" \"npm run dev:timetable\" \"npm run dev:gpt\"",
+    "dev:ai": "cd apps/ai-orchestrator && ../../venv/bin/uvicorn brain:app --port 4009 --reload",
+    "dev": "concurrently \"npm run dev:gateway\" \"npm run dev:auth\" \"npm run dev:dashboard\" \"npm run dev:attendance\" \"npm run dev:assignments\" \"npm run dev:timetable\" \"npm run dev:gpt\" \"npm run dev:ai\"",
     "infra": "cd infra/docker && docker-compose up -d"
   },
   "devDependencies": {

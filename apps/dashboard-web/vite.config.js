@@ -28,6 +28,11 @@ export default defineConfig({
         target: 'http://localhost:4005',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/timetable/, ''),
+      },
+      '/api/brain': {
+        target: 'http://localhost:4009',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/brain/, ''),
       }
     }
   }

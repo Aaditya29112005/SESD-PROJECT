@@ -97,6 +97,73 @@ const CampusGPT = () => {
   );
 };
 
+const LiveBrainOverlay = () => {
+  const [activeAlert, setActiveAlert] = useState<any>(null);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch('/api/brain/live-actions');
+        const data = await response.json();
+        if (data.actions && data.actions.length > 0) {
+          // Play a sound or show the first action
+          setActiveAlert(data.actions[0]);
+          // Auto dismiss after 10 seconds
+          setTimeout(() => setActiveAlert(null), 10000);
+        }
+      } catch (e) {
+        // Silently fail if brain isn't running
+      }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!activeAlert) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+      <div className="w-full max-w-2xl bg-[#0a0a0a] border-2 border-rose-500/50 rounded-3xl shadow-[0_0_100px_rgba(244,63,94,0.2)] overflow-hidden animate-in zoom-in-95 duration-500">
+        <div className="bg-rose-500/10 p-6 border-b border-rose-500/20 flex items-center gap-4">
+          <div className="w-12 h-12 bg-rose-500 rounded-full flex items-center justify-center shadow-lg shadow-rose-500/50 animate-pulse">
+            <AlertTriangle className="text-white" size={24} />
+          </div>
+          <div>
+            <h2 className="text-2xl font-black text-rose-500 tracking-tight">AUTONOMOUS DECISION TRIGGERED</h2>
+            <p className="text-sm font-bold text-white/60">Campus Brain Engine | {new Date(activeAlert.timestamp * 1000).toLocaleTimeString()}</p>
+          </div>
+        </div>
+        <div className="p-8 space-y-6">
+          <div>
+            <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] mb-2">Event Detected</p>
+            <p className="text-lg text-white font-medium">{activeAlert.trigger} for <span className="font-black text-indigo-400">{activeAlert.student_name}</span></p>
+          </div>
+          <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+            <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] mb-2">AI Prediction</p>
+            <p className="text-xl text-rose-400 font-black">{activeAlert.prediction}</p>
+          </div>
+          <div>
+            <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] mb-3">Autonomous Actions Executed</p>
+            <div className="space-y-3">
+              {activeAlert.actions_taken.map((action: string, i: number) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+                  <p className="text-sm font-medium text-white/80">{action}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <button 
+            onClick={() => setActiveAlert(null)}
+            className="w-full mt-4 py-4 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold transition-colors"
+          >
+            Acknowledge & Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Layout = ({ children, user, setUser }: { children: React.ReactNode, user: any, setUser: any }) => {
   const handleLogout = () => {
     googleLogout();
@@ -117,6 +184,8 @@ const Layout = ({ children, user, setUser }: { children: React.ReactNode, user: 
         </div>
         
         <nav className="flex-1 space-y-3">
+          <SidebarItem to="/superadmin" icon={Zap} label="SaaS Control" />
+          <div className="h-px w-full bg-white/5 my-4"></div>
           <SidebarItem to="/" icon={Activity} label="Intelligence" />
           <SidebarItem to="/students" icon={Users} label="Student Graph" />
           <SidebarItem to="/assignments" icon={BookOpen} label="Auto-Grading" />
@@ -150,6 +219,7 @@ const Layout = ({ children, user, setUser }: { children: React.ReactNode, user: 
       <main className="flex-1 relative">
         {children}
         <CampusGPT />
+        <LiveBrainOverlay />
       </main>
     </div>
   );
@@ -163,29 +233,96 @@ const DashboardPage = () => {
     { time: '2m ago', text: 'Distributed trace logged for Auth Service', type: 'MESH' }
   ]);
   
+  const syncAttendanceQueue = async () => {
+    const queue = JSON.parse(localStorage.getItem('attendance_queue') || '[]');
+    if (queue.length === 0) return;
+
+    console.log(`Syncing ${queue.length} offline attendance records...`);
+    const remainingQueue = [];
+
+    for (const record of queue) {
+      try {
+        const response = await fetch('/api/attendance/check-in', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Idempotency-Key': record.idempotency_key
+          },
+          body: JSON.stringify(record.payload)
+        });
+        
+        if (!response.ok && response.status !== 409) {
+          // If it failed (but not because it was a duplicate 409), keep in queue
+          remainingQueue.push(record);
+        }
+      } catch (e) {
+        // Network still down
+        remainingQueue.push(record);
+      }
+    }
+    localStorage.setItem('attendance_queue', JSON.stringify(remainingQueue));
+  };
+
+  useEffect(() => {
+    // Listen for coming back online
+    window.addEventListener('online', syncAttendanceQueue);
+    // Also try to sync on mount
+    syncAttendanceQueue();
+    return () => window.removeEventListener('online', syncAttendanceQueue);
+  }, []);
+
   const recordAttendance = async () => {
-    // 1. FRONTEND: Update UI instantly (Optimistic)
     setAttendance(prev => Math.min(100, (prev + 0.5)));
-    
-    // 2. AI SIMULATION: Add "Brain Thinking" event
     const newEvent = { time: 'Just now', text: 'AI Analyzing Student std_101 Check-in...', type: 'AI' };
     setEvents(prev => [newEvent, ...prev.slice(0, 4)]);
+    
+    const payload = { student_id: 'std_101', course_id: 'cs_301', latitude: 37.7749, longitude: -122.4194, device_id: 'iphone_15_PRO_MAX_XYZ' };
+    const idempotencyKey = `checkin_std_101_${Date.now()}`;
 
-    // 3. BACKEND: Hit the real microservice via proxy
+    if (!navigator.onLine) {
+      console.log('Offline: Queuing attendance record.');
+      const queue = JSON.parse(localStorage.getItem('attendance_queue') || '[]');
+      queue.push({ payload, idempotency_key: idempotencyKey });
+      localStorage.setItem('attendance_queue', JSON.stringify(queue));
+      setEvents(prev => [{ time: 'Just now', text: '📶 Offline: Check-in queued for sync.', type: 'SYSTEM' }, ...prev]);
+      return;
+    }
+
     try {
-      await fetch('/api/attendance/check-in', {
+      const response = await fetch('/api/attendance/check-in', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student_id: 'std_101', course_id: 'cs_301', latitude: 37.77, longitude: -122.41, device_id: 'iphone_15' })
+        headers: { 
+          'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKey
+        },
+        body: JSON.stringify(payload)
       });
       
-      // 4. AI FEEDBACK: Brain returns result after Kafka processing
+      if (response.status === 403) {
+        setEvents(prev => [{ time: 'Just now', text: '🚨 FRAUD ALERT: Proxy attendance rejected.', type: 'SYSTEM' }, ...prev]);
+        return;
+      }
+
       setTimeout(() => {
         setEvents(prev => [{ time: 'Just now', text: '✅ Digital Twin updated. Risk Score: 2.1%', type: 'AI' }, ...prev]);
       }, 1500);
-
     } catch (e) {
-      console.log("Mocking backend response...");
+      console.log("Mocking backend response...", e);
+    }
+  };
+
+  const simulateMissedClass = async () => {
+    const newEvent = { time: 'Just now', text: 'Student std_101 Missed CS-301 Class', type: 'SYSTEM' };
+    setEvents(prev => [newEvent, ...prev.slice(0, 4)]);
+    setAttendance(prev => Math.max(0, (prev - 5.0)));
+    try {
+      await fetch('/api/brain/ingest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_type: 'CLASS_MISSED', student_id: 'std_101', data: {} })
+      });
+    } catch (e) {
+      console.log("Brain not reachable...");
     }
   };
 
@@ -199,13 +336,21 @@ const DashboardPage = () => {
           <h1 className="text-5xl font-black tracking-tight mb-2">Neural Analytics</h1>
           <p className="text-white/30 text-lg">The autonomous digital nervous system is operational.</p>
         </div>
-        <button 
-          onClick={recordAttendance} 
-          className="group relative px-8 py-4 bg-white text-black rounded-2xl font-black text-sm transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-white/10"
-        >
-          <div className="absolute inset-0 bg-indigo-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all"></div>
-          <span className="relative">SIMULATE CAMPUS EVENT</span>
-        </button>
+        <div className="flex gap-4">
+          <button 
+            onClick={simulateMissedClass} 
+            className="group relative px-6 py-4 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-2xl font-black text-sm transition-all hover:bg-rose-500/20 active:scale-95"
+          >
+            SIMULATE CLASS MISSED (x3 for Risk)
+          </button>
+          <button 
+            onClick={recordAttendance} 
+            className="group relative px-8 py-4 bg-white text-black rounded-2xl font-black text-sm transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-white/10"
+          >
+            <div className="absolute inset-0 bg-indigo-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all"></div>
+            <span className="relative">SIMULATE CHECK-IN</span>
+          </button>
+        </div>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -476,6 +621,70 @@ const SettingsPage = () => {
   );
 };
 
+const SuperAdminPage = () => {
+  return (
+    <div className="p-12 max-w-7xl mx-auto">
+      <header className="mb-12 flex justify-between items-end">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="px-2 py-0.5 bg-rose-500/10 text-rose-400 text-[10px] font-bold rounded uppercase tracking-widest">Global SaaS Control</span>
+          </div>
+          <h1 className="text-5xl font-black tracking-tight mb-2">Super Admin Console</h1>
+          <p className="text-white/30 text-lg">Manage multi-tenant workspaces and global AI toggles.</p>
+        </div>
+        <button className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm transition-all hover:scale-[1.02] shadow-2xl shadow-indigo-500/20">
+          + ONBOARD NEW UNIVERSITY
+        </button>
+      </header>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+         {[
+           { label: 'Active Tenants', value: '42', trend: '+3 this month', color: 'text-white' },
+           { label: 'Global API Hits/sec', value: '14.2k', trend: 'Peak Load', color: 'text-indigo-400' },
+           { label: 'Total MRR', value: '$840k', trend: '+12%', color: 'text-emerald-400' },
+         ].map((stat, i) => (
+           <div key={i} className="bg-[#0f0f0f] border border-white/5 p-8 rounded-[2.5rem]">
+             <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em] mb-4">{stat.label}</p>
+             <h2 className={`text-4xl font-black ${stat.color}`}>{stat.value}</h2>
+             <p className="text-[10px] font-bold text-white/40 mt-3">{stat.trend}</p>
+           </div>
+         ))}
+      </div>
+
+      <div className="bg-[#0f0f0f] border border-white/5 rounded-[2.5rem] overflow-hidden">
+        <table className="w-full text-left">
+          <thead>
+            <tr className="border-b border-white/5 text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">
+              <th className="p-8">Workspace (Tenant)</th>
+              <th className="p-8">DB Schema</th>
+              <th className="p-8">AI Brain Active</th>
+              <th className="p-8">Status</th>
+            </tr>
+          </thead>
+          <tbody className="text-sm">
+            {[
+              { name: 'Stanford University', schema: 'tenant_stanford_01', ai: true, status: 'Healthy' },
+              { name: 'MIT', schema: 'tenant_mit_02', ai: true, status: 'Healthy' },
+              { name: 'Local Tech College', schema: 'tenant_ltc_03', ai: false, status: 'Scaling DB' }
+            ].map((t, i) => (
+              <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                <td className="p-8 font-black">{t.name}</td>
+                <td className="p-8 font-mono text-[10px] text-white/40">{t.schema}</td>
+                <td className="p-8">
+                  <div className={`w-12 h-6 rounded-full flex items-center p-1 ${t.ai ? 'bg-indigo-600' : 'bg-white/10'}`}>
+                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${t.ai ? 'translate-x-6' : ''}`}></div>
+                  </div>
+                </td>
+                <td className="p-8 text-white/40">{t.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
 const LoginPage = ({ onLogin }: { onLogin: (user: any) => void }) => {
   return (
     <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 selection:bg-indigo-500/30">
@@ -540,6 +749,7 @@ function App() {
           <Route path="/timetable" element={<TimetablePage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/superadmin" element={<SuperAdminPage />} />
           <Route path="*" element={<div className="p-20 text-center font-black text-white/10 uppercase tracking-[1em]">Module_Loading...</div>} />
         </Routes>
       </Layout>
