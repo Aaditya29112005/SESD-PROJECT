@@ -229,16 +229,71 @@ const Layout = ({ children, user, setUser, role }: { children: React.ReactNode, 
 const RoleAwareDashboard = ({ role }: { role: string }) => {
   const [dashboardData, setDashboardData] = useState<any>(null);
 
+  const DEMO_DATA: Record<string, any> = {
+    student: {
+      type: 'student', risk: 'HIGH',
+      ai_message: 'You are falling behind ⚠️ — The AI has generated your recovery plan.',
+      metrics: [
+        { label: 'Current GPA', value: '2.8', color: 'text-rose-400' },
+        { label: 'Attendance', value: '72%', color: 'text-rose-400' },
+        { label: 'Assignments Due', value: '3', color: 'text-amber-400' },
+        { label: 'Risk Score', value: '82%', color: 'text-rose-500' },
+      ],
+      today_plan: [
+        { time: '10:00 AM', task: 'Complete Assignment 2 (30 min)' },
+        { time: '02:00 PM', task: 'Attend Lecture: Distributed Systems' },
+        { time: '10:00 PM', task: 'Best time for you to study (based on Digital Twin)' },
+      ],
+      ai_cards: [
+        { title: 'Risk Alert', content: 'Probability of failing CS-301 is 82% without immediate intervention.', type: 'danger' },
+        { title: 'Recommendation', content: "Complete the 'Raft Consensus' task to improve your score by 15%.", type: 'action', action: 'Start Now' },
+      ],
+    },
+    instructor: {
+      type: 'instructor',
+      ai_message: 'Your AI Teaching Assistant is active. 3 students need your attention.',
+      metrics: [
+        { label: 'Avg Attendance', value: '88%', color: 'text-emerald-400' },
+        { label: 'Assignments to Grade', value: '42', color: 'text-indigo-400' },
+        { label: 'At-Risk Students', value: '3', color: 'text-rose-400' },
+        { label: 'Course Health', value: 'Fair', color: 'text-amber-400' },
+      ],
+      at_risk_students: [
+        { name: 'Alex Mercer (std_101)', issue: 'Missed 3 consecutive classes', action: 'Notify' },
+      ],
+      ai_cards: [
+        { title: 'Anomaly Detected', content: 'Assignment 3 has a 70% drop rate. It may be too difficult.', type: 'warning', action: 'Extend Deadline' },
+        { title: 'Action Needed', content: '3 students are predicted to fail. Schedule 1-on-1 sessions today.', type: 'danger', action: 'Schedule Session' },
+      ],
+    },
+    superadmin: {
+      type: 'superadmin',
+      ai_message: 'Global SaaS Control is Nominal. 2 anomalies detected across tenants.',
+      metrics: [
+        { label: 'Active Tenants', value: '42', color: 'text-white' },
+        { label: 'Total MRR', value: '$840k', color: 'text-emerald-400' },
+        { label: 'Global API RPS', value: '14.2k', color: 'text-indigo-400' },
+        { label: 'System Health', value: '99.9%', color: 'text-emerald-400' },
+      ],
+      ai_cards: [
+        { title: 'System-wide Alert', content: 'Local Tech College (tenant_ltc_03) has a rising dropout risk above threshold.', type: 'warning', action: 'View Tenant' },
+        { title: 'Simulation Ready', content: 'Engagement is dropping in 3 campuses. Run a What-If Simulation?', type: 'action', action: 'Run Simulation' },
+      ],
+    },
+  };
+
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
         const response = await fetch('/api/role-dashboard/', {
           headers: { 'role': role }
         });
+        if (!response.ok) throw new Error('Backend unavailable');
         const data = await response.json();
         setDashboardData(data);
       } catch (e) {
-        console.error("Failed to fetch role dashboard");
+        // Fallback to rich demo data (used on Vercel / when Python backends aren't running)
+        setDashboardData(DEMO_DATA[role] || DEMO_DATA['student']);
       }
     };
     fetchDashboard();
