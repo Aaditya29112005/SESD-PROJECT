@@ -209,15 +209,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onNavigateToSignu
               <span className="relative px-6 bg-white text-[11px] font-black text-[#cbd5e1] uppercase tracking-[0.2em]">Or continue with</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <button className="flex items-center justify-center gap-3 px-4 py-4 bg-white border border-[#e2e8f0] rounded-2xl hover:bg-[#f8fafc] transition-all active:scale-95 font-bold text-sm shadow-sm">
-                <img src="https://www.google.com/favicon.ico" className="w-5 h-5" alt="Google" />
-                Google
-              </button>
-              <button className="flex items-center justify-center gap-3 px-4 py-4 bg-white border border-[#e2e8f0] rounded-2xl hover:bg-[#f8fafc] transition-all active:scale-95 font-bold text-sm shadow-sm">
-                <img src="https://www.microsoft.com/favicon.ico" className="w-5 h-5" alt="Microsoft" />
-                Microsoft
-              </button>
+            <div className="flex justify-center">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => console.log('Login Failed')}
+                useOneTap
+                theme="outline"
+                shape="pill"
+                width="100%"
+              />
             </div>
           </div>
 
