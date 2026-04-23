@@ -874,6 +874,22 @@ const SuperAdminPage = () => {
 };
 
 const LoginPage = ({ onLogin }: { onLogin: (user: any, role: string) => void }) => {
+  const handleGoogleSuccess = (credentialResponse: any) => {
+    try {
+      const decoded: any = jwtDecode(credentialResponse.credential);
+      onLogin(
+        { 
+          name: decoded.name, 
+          email: decoded.email, 
+          picture: decoded.picture 
+        }, 
+        'student'
+      );
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 selection:bg-indigo-500/30">
       <div className="w-full max-w-md bg-[#0f0f0f] border border-white/10 p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
@@ -884,26 +900,44 @@ const LoginPage = ({ onLogin }: { onLogin: (user: any, role: string) => void }) 
           </div>
         </div>
         <h2 className="text-3xl font-black text-center mb-2">CampusOS ∞</h2>
-        <p className="text-white/40 text-center mb-10 text-sm font-medium">Select your role to access your AI Control Panel</p>
+        <p className="text-white/40 text-center mb-8 text-sm font-medium">Log in to access your AI Control Panel</p>
         
-        <div className="space-y-4">
+        <div className="flex justify-center mb-6">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => {
+              console.log('Login Failed');
+            }}
+            useOneTap
+            theme="filled_black"
+            shape="pill"
+          />
+        </div>
+
+        <div className="relative flex items-center py-4 mb-2">
+          <div className="flex-grow border-t border-white/5"></div>
+          <span className="flex-shrink-0 mx-4 text-white/20 text-[10px] font-black uppercase tracking-widest">or use demo roles</span>
+          <div className="flex-grow border-t border-white/5"></div>
+        </div>
+
+        <div className="space-y-3">
           <button 
             onClick={() => onLogin({ name: 'Alex Mercer', email: 'alex@student.edu' }, 'student')} 
-            className="w-full bg-white/5 border border-white/10 py-4 rounded-2xl font-black text-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-3"
+            className="w-full bg-white/5 border border-white/10 py-3.5 rounded-2xl font-black text-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-3"
           >
-            <Users size={18} className="text-white/60" /> Login as Student
+            <Users size={18} className="text-white/60" /> Demo as Student
           </button>
           <button 
             onClick={() => onLogin({ name: 'Prof. Smith', email: 'smith@faculty.edu' }, 'instructor')} 
-            className="w-full bg-indigo-600/10 border border-indigo-500/30 text-indigo-400 py-4 rounded-2xl font-black text-sm hover:bg-indigo-600/20 transition-colors flex items-center justify-center gap-3"
+            className="w-full bg-indigo-600/10 border border-indigo-500/30 text-indigo-400 py-3.5 rounded-2xl font-black text-sm hover:bg-indigo-600/20 transition-colors flex items-center justify-center gap-3"
           >
-            <BookOpen size={18} className="text-indigo-400/60" /> Login as Instructor
+            <BookOpen size={18} className="text-indigo-400/60" /> Demo as Instructor
           </button>
           <button 
             onClick={() => onLogin({ name: 'System Admin', email: 'admin@campusos.ai' }, 'superadmin')} 
-            className="w-full bg-rose-500/10 border border-rose-500/30 text-rose-400 py-4 rounded-2xl font-black text-sm hover:bg-rose-500/20 transition-colors flex items-center justify-center gap-3"
+            className="w-full bg-rose-500/10 border border-rose-500/30 text-rose-400 py-3.5 rounded-2xl font-black text-sm hover:bg-rose-500/20 transition-colors flex items-center justify-center gap-3"
           >
-            <Zap size={18} className="text-rose-400/60" /> Login as Super Admin
+            <Zap size={18} className="text-rose-400/60" /> Demo as Super Admin
           </button>
         </div>
       </div>
