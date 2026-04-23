@@ -1,7 +1,7 @@
 # ⚡ CampusOS X — The Autonomous University OS
 
 Welcome to the digital nervous system for educational institutions. This repository contains the core distributed services, infrastructure, and AI orchestration layer for CampusOS X.
-deploy url - https://dashboard-web-dun.vercel.app/
+deploy url - https://sesd-project-gkwx.vercel.app/
 ---
 
 ## 🏗️ Quick Start (Local Development)
