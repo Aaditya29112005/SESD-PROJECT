@@ -14,7 +14,6 @@ import { TimetablePage } from './components/TimetablePage';
 import { NotificationsPage } from './components/NotificationsPage';
 import { SettingsPage } from './components/SettingsPage';
 import { LoginPage } from './components/LoginPage';
-import { SignupPage } from './components/SignupPage';
 
 // --- HOOKS ---
 import { useBrainFeed } from './hooks/useBrainFeed';
@@ -157,20 +156,15 @@ const Layout = ({ children, user, setUser, role, setRole }: { children: React.Re
 function App() {
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState('student');
-  const [authView, setAuthView] = useState<'login' | 'signup'>('login');
   const { brainEvents } = useBrainFeed();
 
-  const handleAuth = (userData: any, selectedRole: string) => {
+  const handleLogin = (userData: any, selectedRole: string) => {
     setUser(userData);
     setRole(selectedRole);
   };
 
   if (!user) {
-    return authView === 'login' ? (
-      <LoginPage onLogin={handleAuth} onNavigateToSignup={() => setAuthView('signup')} />
-    ) : (
-      <SignupPage onSignup={handleAuth} onNavigateToLogin={() => setAuthView('login')} />
-    );
+    return <LoginPage onLogin={handleLogin} />;
   }
 
   return (
