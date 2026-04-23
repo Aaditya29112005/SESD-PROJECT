@@ -874,6 +874,8 @@ const SuperAdminPage = () => {
 };
 
 const LoginPage = ({ onLogin }: { onLogin: (user: any, role: string) => void }) => {
+  const [selectedRole, setSelectedRole] = useState('student');
+
   const handleGoogleSuccess = (credentialResponse: any) => {
     try {
       const decoded: any = jwtDecode(credentialResponse.credential);
@@ -883,7 +885,7 @@ const LoginPage = ({ onLogin }: { onLogin: (user: any, role: string) => void }) 
           email: decoded.email, 
           picture: decoded.picture 
         }, 
-        'student'
+        selectedRole
       );
     } catch (error) {
       console.error("Login failed", error);
@@ -902,6 +904,27 @@ const LoginPage = ({ onLogin }: { onLogin: (user: any, role: string) => void }) 
         <h2 className="text-3xl font-black text-center mb-2">CampusOS ∞</h2>
         <p className="text-white/40 text-center mb-8 text-sm font-medium">Log in to access your AI Control Panel</p>
         
+        <div className="flex bg-white/5 p-1.5 rounded-2xl mb-6">
+          <button 
+            onClick={() => setSelectedRole('student')}
+            className={`flex-1 py-2 text-xs font-black rounded-xl transition-all ${selectedRole === 'student' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+          >
+            Student
+          </button>
+          <button 
+            onClick={() => setSelectedRole('instructor')}
+            className={`flex-1 py-2 text-xs font-black rounded-xl transition-all ${selectedRole === 'instructor' ? 'bg-indigo-500 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+          >
+            Instructor
+          </button>
+          <button 
+            onClick={() => setSelectedRole('superadmin')}
+            className={`flex-1 py-2 text-xs font-black rounded-xl transition-all ${selectedRole === 'superadmin' ? 'bg-rose-500 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+          >
+            Admin
+          </button>
+        </div>
+
         <div className="flex justify-center mb-6">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
