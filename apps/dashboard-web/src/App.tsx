@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Activity, Users, Calendar, BookOpen, Bell, Settings, Zap, LogOut } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Activity, Users, Calendar, BookOpen, Bell, Settings, Zap, LogOut, ShieldAlert } from 'lucide-react';
 import { googleLogout } from '@react-oauth/google';
 
 // --- COMPONENTS ---
@@ -14,20 +14,62 @@ import { TimetablePage } from './components/TimetablePage';
 import { NotificationsPage } from './components/NotificationsPage';
 import { SettingsPage } from './components/SettingsPage';
 import { LoginPage } from './components/LoginPage';
+import { SignupPage } from './components/SignupPage';
 
 // --- HOOKS ---
 import { useBrainFeed } from './hooks/useBrainFeed';
 
-// --- DEMO ROLE SWITCHER (Visible in dev/demo mode) ---
+// --- ACCESS CONTROL CONFIG ---
+const ROLE_PERMISSIONS: Record<string, string[]> = {
+  student: ['/', '/notifications'],
+  instructor: ['/', '/analytics', '/students', '/assignments', '/timetable', '/notifications', '/settings'],
+  superadmin: ['/', '/analytics', '/students', '/assignments', '/timetable', '/notifications', '/settings', '/superadmin']
+};
+
+// --- PROTECTED ROUTE COMPONENT ---
+const ProtectedRoute = ({ children, role }: { children: React.ReactNode, role: string }) => {
+  const location = useLocation();
+  const allowedPaths = ROLE_PERMISSIONS[role] || [];
+  
+  const isAllowed = allowedPaths.some(path => 
+    path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
+  );
+
+  if (!isAllowed) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-12 text-center">
+        <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center text-rose-600 mb-6 shadow-xl shadow-rose-600/10">
+          <ShieldAlert size={40} />
+        </div>
+        <h2 className="text-3xl font-bold text-[#191c1e] mb-2 font-['Space_Grotesk']">Access Restricted</h2>
+        <p className="text-[#727786] max-w-md mx-auto mb-8">
+          Your institutional role ({role}) does not have permission to access the neural node at <span className="font-mono text-rose-600 bg-rose-50 px-2 py-0.5 rounded">{location.pathname}</span>.
+        </p>
+        <button 
+          onClick={() => window.location.href = '/'}
+          className="px-8 py-3 bg-[#066BF0] text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 hover:scale-105 transition-all"
+        >
+          Return to Hub
+        </button>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+};
+
+// --- DEMO ROLE SWITCHER (Restricted to Super Admin) ---
 const DemoRoleSwitcher = ({ role, setRole }: { role: string, setRole: (r: string) => void }) => {
+  if (role !== 'superadmin') return null;
+
   const roles = [
     { id: 'student', label: '🎓 Student', color: 'hover:bg-blue-50' },
     { id: 'instructor', label: '👨‍🏫 Instructor', color: 'hover:bg-blue-50' },
-    { id: 'superadmin', label: '👑 Super Admin', color: 'hover:bg-blue-50' },
+    { id: 'superadmin', label: '👑 Admin', color: 'hover:bg-blue-50' },
   ];
   return (
     <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[90] flex items-center gap-1 bg-white/80 backdrop-blur-xl border border-[#e2e8f0] rounded-2xl p-1 shadow-2xl">
-      <span className="text-[9px] font-black text-[#727786] uppercase tracking-[0.3em] px-3">DEMO</span>
+      <span className="text-[9px] font-black text-[#727786] uppercase tracking-[0.3em] px-3">SIMULATOR</span>
       {roles.map(r => (
         <button
           key={r.id}
@@ -51,8 +93,10 @@ const Layout = ({ children, user, setUser, role, setRole }: { children: React.Re
     setUser(null);
   };
 
+  const allowedPaths = ROLE_PERMISSIONS[role] || [];
+
   return (
-    <div className="min-h-screen bg-[#f7f9fb] flex text-[#191c1e] antialiased selection:bg-blue-500/10">
+    <div className="min-h-screen bg-[#f7f9fb] flex text-[#191c1e] antialiased selection:bg-blue-500/10 font-['Manrope']">
       <aside className="w-72 glass flex flex-col p-8 sticky top-0 h-screen z-50">
         <div className="flex items-center gap-3 mb-12">
           <div className="w-12 h-12 bg-[#066BF0] rounded-2xl flex items-center justify-center shadow-xl shadow-blue-500/30">
@@ -65,14 +109,18 @@ const Layout = ({ children, user, setUser, role, setRole }: { children: React.Re
         </div>
         
         <nav className="flex-1 space-y-3">
-          {role === 'superadmin' && <SidebarItem to="/superadmin" icon={Zap} label="SaaS Control" />}
-          {role === 'superadmin' && <div className="h-px w-full bg-white/5 my-4"></div>}
+          {allowedPaths.includes('/superadmin') && <SidebarItem to="/superadmin" icon={Zap} label="SaaS Control" />}
+          {allowedPaths.includes('/superadmin') && <div className="h-px w-full bg-white/5 my-4"></div>}
+          
           <SidebarItem to="/" icon={Activity} label="My Dashboard" />
-          {role !== 'student' && <SidebarItem to="/students" icon={Users} label="Student Graph" />}
-          {role !== 'student' && <SidebarItem to="/assignments" icon={BookOpen} label="Auto-Grading" />}
-          {role !== 'student' && <SidebarItem to="/timetable" icon={Calendar} label="Hyper-Scheduler" />}
+          
+          {allowedPaths.includes('/students') && <SidebarItem to="/students" icon={Users} label="Student Graph" />}
+          {allowedPaths.includes('/assignments') && <SidebarItem to="/assignments" icon={BookOpen} label="Auto-Grading" />}
+          {allowedPaths.includes('/timetable') && <SidebarItem to="/timetable" icon={Calendar} label="Hyper-Scheduler" />}
+          
           <SidebarItem to="/notifications" icon={Bell} label="Notif Brain" />
-          {role !== 'student' && <SidebarItem to="/settings" icon={Settings} label="System Config" />}
+          
+          {allowedPaths.includes('/settings') && <SidebarItem to="/settings" icon={Settings} label="System Config" />}
         </nav>
         
         <div className="mt-auto">
@@ -109,28 +157,61 @@ const Layout = ({ children, user, setUser, role, setRole }: { children: React.Re
 function App() {
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState('student');
+  const [authView, setAuthView] = useState<'login' | 'signup'>('login');
   const { brainEvents } = useBrainFeed();
 
-  const handleLogin = (userData: any, selectedRole: string) => {
+  const handleAuth = (userData: any, selectedRole: string) => {
     setUser(userData);
     setRole(selectedRole);
   };
 
   if (!user) {
-    return <LoginPage onLogin={handleLogin} />;
+    return authView === 'login' ? (
+      <LoginPage onLogin={handleAuth} onNavigateToSignup={() => setAuthView('signup')} />
+    ) : (
+      <SignupPage onSignup={handleAuth} onNavigateToLogin={() => setAuthView('login')} />
+    );
   }
 
   return (
     <Router>
       <Layout user={user} setUser={setUser} role={role} setRole={setRole}>
         <Routes>
-          <Route path="/" element={<RoleAwareDashboard role={role} brainEvents={brainEvents} />} />
-          <Route path="/analytics" element={<DashboardPage />} />
-          <Route path="/students" element={<StudentsPage />} />
-          <Route path="/assignments" element={<AssignmentsPage />} />
-          <Route path="/timetable" element={<TimetablePage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/" element={
+            <ProtectedRoute role={role}>
+              <RoleAwareDashboard role={role} brainEvents={brainEvents} />
+            </ProtectedRoute>
+          } />
+          <Route path="/analytics" element={
+            <ProtectedRoute role={role}>
+              <DashboardPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/students" element={
+            <ProtectedRoute role={role}>
+              <StudentsPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/assignments" element={
+            <ProtectedRoute role={role}>
+              <AssignmentsPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/timetable" element={
+            <ProtectedRoute role={role}>
+              <TimetablePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/notifications" element={
+            <ProtectedRoute role={role}>
+              <NotificationsPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/settings" element={
+            <ProtectedRoute role={role}>
+              <SettingsPage />
+            </ProtectedRoute>
+          } />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>
