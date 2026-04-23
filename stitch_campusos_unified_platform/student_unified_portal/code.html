@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CampusOS | Student Unified Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#424655",
+                        "on-primary-fixed-variant": "#00429a",
+                        "tertiary-container": "#63738a",
+                        "secondary-container": "#d6e0f5",
+                        "on-surface": "#191c1e",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#d9e3f8",
+                        "on-primary-container": "#f9f8ff",
+                        "tertiary-fixed": "#d3e4fe",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container": "#eceef0",
+                        "surface-tint": "#0058ca",
+                        "outline": "#727786",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-container": "#f6f8ff",
+                        "surface": "#f7f9fb",
+                        "secondary": "#555f71",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "background": "#f7f9fb",
+                        "on-secondary-fixed-variant": "#3d4758",
+                        "on-primary-fixed": "#001944",
+                        "tertiary": "#4b5a70",
+                        "on-secondary-fixed": "#121c2b",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-bright": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "primary-fixed-dim": "#b0c6ff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "secondary-fixed-dim": "#bdc7db",
+                        "inverse-primary": "#b0c6ff",
+                        "inverse-surface": "#2d3133",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#596375",
+                        "outline-variant": "#c2c6d7",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8ea",
+                        "primary-container": "#066bf0",
+                        "on-error-container": "#93000a",
+                        "primary": "#0054c0",
+                        "primary-fixed": "#d9e2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "sm": "12px",
+                        "gutter": "24px",
+                        "xl": "80px",
+                        "lg": "48px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "margin": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Space Grotesk"],
+                        "body-sm": ["Manrope"],
+                        "display-xl": ["Space Grotesk"],
+                        "body-lg": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "headline-sm": ["Space Grotesk"],
+                        "display-lg": ["Space Grotesk"],
+                        "label-md": ["Manrope"],
+                        "label-sm": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .sidebar-glass {
+            background: rgba(2, 6, 23, 0.95);
+            backdrop-filter: blur(20px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background min-h-screen">
+<aside class="h-screen w-72 fixed left-0 top-0 border-r border-white/10 sidebar-glass z-50 flex flex-col py-8 shadow-2xl overflow-y-auto">
+<div class="px-8 mb-10 flex flex-col">
+<span class="text-white font-black text-xl tracking-tighter font-headline-md">CampusOS</span>
+<span class="text-slate-400 text-xs font-medium font-body-sm mt-1 uppercase tracking-widest">Academic Management</span>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="bg-blue-600/10 text-blue-400 border-l-4 border-blue-600 flex items-center gap-3 px-6 py-4 transition-all duration-300 font-space-grotesk text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span>Dashboard</span>
+</a>
+<a class="text-slate-400 flex items-center gap-3 px-6 py-4 hover:bg-white/5 transition-all duration-300 font-space-grotesk text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+<span>Academic Hub</span>
+</a>
+<a class="text-slate-400 flex items-center gap-3 px-6 py-4 hover:bg-white/5 transition-all duration-300 font-space-grotesk text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+<span>LMS Service</span>
+</a>
+<a class="text-slate-400 flex items-center gap-3 px-6 py-4 hover:bg-white/5 transition-all duration-300 font-space-grotesk text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span>Finance</span>
+</a>
+<a class="text-slate-400 flex items-center gap-3 px-6 py-4 hover:bg-white/5 transition-all duration-300 font-space-grotesk text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span>Schedule</span>
+</a>
+<a class="text-slate-400 flex items-center gap-3 px-6 py-4 hover:bg-white/5 transition-all duration-300 font-space-grotesk text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full bg-blue-600 text-white rounded-xl py-3 flex items-center justify-center gap-2 font-semibold text-sm hover:bg-blue-700 transition-colors shadow-lg shadow-blue-900/20">
+<span class="material-symbols-outlined text-base" data-icon="support_agent">support_agent</span>
+                System Support
+            </button>
+</div>
+</aside>
+<main class="ml-72 min-h-screen flex flex-col">
+<header class="sticky top-0 z-40 flex items-center justify-between px-8 h-16 w-full bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-[0_4px_20px_-2px_rgba(6,107,240,0.08)]">
+<div class="flex items-center bg-slate-100 rounded-lg px-4 py-2 w-96">
+<span class="material-symbols-outlined text-slate-400 text-lg mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full font-body-md" placeholder="Search courses, resources, or people..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative text-slate-500 hover:text-blue-600 transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<button class="text-slate-500 hover:text-blue-600 transition-colors">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+<div class="text-right">
+<p class="text-sm font-bold font-headline-sm leading-none">Alex Sterling</p>
+<p class="text-[11px] text-slate-500 font-label-sm mt-1 uppercase">CS Undergrad</p>
+</div>
+<img alt="Alex Sterling" class="w-10 h-10 rounded-full border-2 border-blue-500/20 object-cover" data-alt="Close up portrait of a young male university student with short hair, smiling confidently in soft campus lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC83q9woCQwnbzF9nOjmZdx3wSu5PRg3wHEwIjTHJlH8F0ATpDmAS9PKhXsEUc8DFQCEINWd2djy7ug9hN3I4qeMprGDLNKXSU0DyAzCE6JSH4BC7K6WO_E-OL0_r7mlCjeYt7e0eD2CotxE-1fOrkdNoIsAyPXEDmwFx-taqVNF922qT-duvDcsogKs6HgQwEsInE-7HFOwDdGIwDc4Kz2zrT3jl-oLY3D7-iiTRJTfmkE3p2GxtOz4cXX2BgA3il5CoKr5z9Qw_M"/>
+</div>
+</div>
+</header>
+<section class="p-margin flex-1">
+<div class="mb-lg">
+<h1 class="font-display-lg text-display-lg text-on-surface">Welcome back, Alex.</h1>
+<p class="font-body-lg text-secondary mt-2">You have 3 deadlines approaching this week. Let's get to work.</p>
+</div>
+<div class="grid grid-cols-12 gap-gutter">
+<div class="col-span-12 lg:col-span-4 glass-card p-md rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-4">
+<span class="text-sm font-bold uppercase tracking-widest text-slate-400 font-label-md">Total Attendance</span>
+<span class="material-symbols-outlined text-blue-500" data-icon="analytics">analytics</span>
+</div>
+<div class="flex items-end gap-2 mb-6">
+<h2 class="text-4xl font-bold font-display-xl text-primary">88.5%</h2>
+<span class="text-green-500 font-bold mb-1 flex items-center text-sm">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span> 
+                            +2.4%
+                        </span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-blue-500 to-blue-300 h-full w-[88.5%] rounded-full"></div>
+</div>
+<p class="text-xs text-secondary mt-4 font-body-sm">Last updated: 2 hours ago. You're above the 75% threshold.</p>
+</div>
+<div class="col-span-12 lg:col-span-4 bg-primary-container p-md rounded-xl shadow-lg relative overflow-hidden group">
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-4">
+<span class="text-sm font-bold uppercase tracking-widest text-blue-100 font-label-md">Next Up</span>
+<span class="material-symbols-outlined text-white" data-icon="schedule">schedule</span>
+</div>
+<h2 class="text-2xl font-bold font-headline-md text-white">Distributed Systems</h2>
+<p class="text-blue-100 font-body-md mt-1">Room 402 • Science Block</p>
+<div class="mt-8 flex items-center gap-4">
+<div class="bg-white/20 backdrop-blur-md px-4 py-2 rounded-lg">
+<span class="block text-[10px] text-blue-100 uppercase font-bold">Starts In</span>
+<span class="text-xl font-bold text-white">45m</span>
+</div>
+<button class="bg-white text-blue-600 px-6 py-2 rounded-lg font-bold text-sm shadow-sm hover:bg-blue-50 transition-colors">Join Online</button>
+</div>
+</div>
+<div class="absolute -right-8 -bottom-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-[160px] text-white" data-icon="laptop_chromebook" data-weight="fill">laptop_chromebook</span>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4 glass-card p-md rounded-xl flex flex-col justify-between">
+<div>
+<span class="text-sm font-bold uppercase tracking-widest text-slate-400 font-label-md block mb-4">Quick Actions</span>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex flex-col items-center justify-center p-4 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition-all group">
+<span class="material-symbols-outlined text-blue-600 mb-2 group-hover:scale-110 transition-transform" data-icon="payments">payments</span>
+<span class="text-xs font-bold font-label-md text-on-surface">Pay Fees</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition-all group">
+<span class="material-symbols-outlined text-blue-600 mb-2 group-hover:scale-110 transition-transform" data-icon="description">description</span>
+<span class="text-xs font-bold font-label-md text-on-surface">Grade Report</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition-all group">
+<span class="material-symbols-outlined text-blue-600 mb-2 group-hover:scale-110 transition-transform" data-icon="history_edu">history_edu</span>
+<span class="text-xs font-bold font-label-md text-on-surface">Transcript</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition-all group">
+<span class="material-symbols-outlined text-blue-600 mb-2 group-hover:scale-110 transition-transform" data-icon="directions_bus">directions_bus</span>
+<span class="text-xs font-bold font-label-md text-on-surface">Bus Pass</span>
+</button>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-8 glass-card rounded-xl overflow-hidden shadow-sm">
+<div class="p-md border-b border-slate-100 flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm">Pending Assignments</h3>
+<a class="text-blue-600 text-xs font-bold uppercase tracking-wider hover:underline" href="#">View All</a>
+</div>
+<div class="divide-y divide-slate-50">
+<div class="p-md flex items-center gap-4 hover:bg-slate-50/50 transition-colors">
+<div class="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600">
+<span class="material-symbols-outlined" data-icon="code">code</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-on-surface font-body-md">Binary Search Tree Implementation</h4>
+<p class="text-xs text-secondary mt-0.5">Algorithm Design &amp; Analysis</p>
+</div>
+<div class="text-right">
+<span class="px-3 py-1 bg-error-container text-error text-[10px] font-bold rounded-full uppercase tracking-tighter">Due in 4h</span>
+<p class="text-xs text-slate-400 mt-1 font-body-sm">Worth 15%</p>
+</div>
+</div>
+<div class="p-md flex items-center gap-4 hover:bg-slate-50/50 transition-colors">
+<div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-on-surface font-body-md">SQL Schema Normalization Lab</h4>
+<p class="text-xs text-secondary mt-0.5">Database Management Systems</p>
+</div>
+<div class="text-right">
+<span class="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-full uppercase tracking-tighter">Due Tomorrow</span>
+<p class="text-xs text-slate-400 mt-1 font-body-sm">Worth 10%</p>
+</div>
+</div>
+<div class="p-md flex items-center gap-4 hover:bg-slate-50/50 transition-colors">
+<div class="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-on-surface font-body-md">Penetration Testing Report</h4>
+<p class="text-xs text-secondary mt-0.5">Cyber Security Essentials</p>
+</div>
+<div class="text-right">
+<span class="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-full uppercase tracking-tighter">Due Sep 24</span>
+<p class="text-xs text-slate-400 mt-1 font-body-sm">Worth 25%</p>
+</div>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4 space-y-gutter">
+<div class="glass-card rounded-xl p-md">
+<h3 class="font-headline-sm text-headline-sm mb-4">Campus News</h3>
+<div class="space-y-4">
+<div class="group cursor-pointer">
+<div class="overflow-hidden rounded-lg mb-2">
+<img class="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Modern university library with tall glass windows, bookshelves, and students studying in a bright, airy environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyJz1VhMWrELkEUZnUa58HIzJs463hCslghwcpnCNNtqoKG71vIJjfdXTOeTvAMXpJU-syTgK-XymsKXt-NtlARg2Zw6P-JotzvtyJ5IKiDibowi0vaDbC_fMcLVtAVN1jsbtSJo9C1SvyW9vgBgd14CqkFIfPzpSP2uU4jFDrS_IN2VdMiNTm_JjVPZGKl6GxeSM-Y-jLbxVT4F_LD1zuK827sKpFyDurIE0rau8CxCNCAHIcA4A1exaXFrLClVfE76WxCN9_G1Q"/>
+</div>
+<span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest font-label-md">Events</span>
+<h4 class="font-bold text-sm leading-tight mt-1 group-hover:text-blue-600 transition-colors">Annual Tech Symposium '24 registration now open</h4>
+<p class="text-xs text-slate-500 mt-2 line-clamp-2">Join us for the largest student-led technology event in the region with over 50+ speakers...</p>
+</div>
+<hr class="border-slate-100"/>
+<div class="flex gap-3 group cursor-pointer">
+<div class="flex-1">
+<span class="text-[10px] font-bold text-purple-600 uppercase tracking-widest font-label-md">Facilities</span>
+<h4 class="font-bold text-sm leading-tight mt-1 group-hover:text-blue-600 transition-colors">Library hours extended for finals week</h4>
+</div>
+<span class="material-symbols-outlined text-slate-300" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+<div class="bg-slate-900 rounded-xl p-md relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="text-white font-headline-sm text-headline-sm mb-2">Career Hub</h3>
+<p class="text-slate-400 text-sm font-body-sm mb-4">24 new internships matching your CS profile were posted today.</p>
+<button class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-blue-500 transition-colors">Explore Openings</button>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-20">
+<span class="material-symbols-outlined text-white text-6xl" data-icon="work" data-weight="fill">work</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<footer class="p-margin border-t border-slate-100 flex items-center justify-between text-slate-400">
+<p class="text-xs font-body-sm">© 2024 CampusOS Ecosystem. All institutional data is encrypted.</p>
+<div class="flex gap-6">
+<a class="text-xs hover:text-blue-600 transition-colors" href="#">Privacy Policy</a>
+<a class="text-xs hover:text-blue-600 transition-colors" href="#">Terms of Service</a>
+<a class="text-xs hover:text-blue-600 transition-colors" href="#">Help Center</a>
+</div>
+</footer>
+</main>
+<button class="fixed bottom-margin right-margin w-14 h-14 bg-primary-container text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined text-2xl" data-icon="chat_bubble" data-weight="fill">chat_bubble</span>
+</button>
+</body></html>

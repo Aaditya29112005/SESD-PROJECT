@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sign Up | CampusOS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#596375",
+                    "error": "#ba1a1a",
+                    "background": "#f7f9fb",
+                    "surface-container-highest": "#e0e3e5",
+                    "secondary": "#555f71",
+                    "tertiary": "#4b5a70",
+                    "outline": "#727786",
+                    "inverse-surface": "#2d3133",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "secondary-container": "#d6e0f5",
+                    "tertiary-fixed": "#d3e4fe",
+                    "tertiary-container": "#63738a",
+                    "tertiary-fixed-dim": "#b7c8e1",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed": "#121c2b",
+                    "on-primary-container": "#f9f8ff",
+                    "on-background": "#191c1e",
+                    "inverse-primary": "#b0c6ff",
+                    "surface-bright": "#f7f9fb",
+                    "secondary-fixed": "#d9e3f8",
+                    "surface-dim": "#d8dadc",
+                    "surface-container-high": "#e6e8ea",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#f6f8ff",
+                    "on-tertiary-fixed": "#0b1c30",
+                    "on-primary": "#ffffff",
+                    "surface-tint": "#0058ca",
+                    "on-tertiary-fixed-variant": "#38485d",
+                    "secondary-fixed-dim": "#bdc7db",
+                    "primary-fixed-dim": "#b0c6ff",
+                    "on-surface-variant": "#424655",
+                    "on-secondary-fixed-variant": "#3d4758",
+                    "primary-container": "#066bf0",
+                    "on-error-container": "#93000a",
+                    "surface-variant": "#e0e3e5",
+                    "outline-variant": "#c2c6d7",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-low": "#f2f4f6",
+                    "primary-fixed": "#d9e2ff",
+                    "on-surface": "#191c1e",
+                    "on-primary-fixed-variant": "#00429a",
+                    "primary": "#0054c0",
+                    "on-primary-fixed": "#001944",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-container": "#eceef0",
+                    "surface": "#f7f9fb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "12px",
+                    "md": "24px",
+                    "gutter": "24px",
+                    "margin": "32px",
+                    "base": "8px",
+                    "lg": "48px",
+                    "xs": "4px",
+                    "xl": "80px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Space Grotesk"],
+                    "body-sm": ["Manrope"],
+                    "display-lg": ["Space Grotesk"],
+                    "body-lg": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "headline-md": ["Space Grotesk"],
+                    "display-xl": ["Space Grotesk"],
+                    "label-sm": ["Manrope"],
+                    "label-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .auth-gradient {
+            background: linear-gradient(135deg, #0054c0 0%, #066bf0 100%);
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 border-b border-white/20 bg-white/70 backdrop-blur-md shadow-sm shadow-blue-900/5 flex justify-between items-center px-8 h-16 w-full">
+<div class="flex items-center gap-2">
+<span class="text-2xl font-bold tracking-tighter text-slate-900 font-headline-md">CampusOS</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-slate-500 font-['Space_Grotesk'] text-sm tracking-tight hover:text-blue-500 transition-colors duration-300" href="#">Help</a>
+<a class="text-slate-500 font-['Space_Grotesk'] text-sm tracking-tight hover:text-blue-500 transition-colors duration-300" href="#">Institutional Access</a>
+<button class="text-blue-600 font-['Space_Grotesk'] text-sm tracking-tight font-semibold border-b-2 border-blue-600 active:scale-95 transition-transform">Support</button>
+</nav>
+</header>
+<main class="flex-grow flex flex-col md:flex-row pt-16">
+<!-- Visual Split Section -->
+<section class="hidden md:flex md:w-1/2 auth-gradient relative overflow-hidden flex-col justify-center p-xl">
+<div class="absolute inset-0 opacity-20 pointer-events-none">
+<img alt="abstract" class="w-full h-full object-cover" data-alt="Modern architectural abstract of a glass university building with blue sky reflections and geometric patterns, clean tech aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeoEZ8piJQYZLRKrXooN2EtseUmPVjxV5FEiQsmSO3lDqv15fx75t49CLr-DhHeYDfRmJ5Vo77wqFabevlHAMuBHu7BmHZLFIewEh6EC2NdEV2jtKfnEjY73ej4Eh1ANClO0FhC71nVwBKSf2bLcwJQTrtD_C_-uFAtJZR1owJTccEl6wVZok_UmkgHaUu313QcAVigtTPQtSkkDOrWXRPzb0mCupp3_XUhzAfj0OrbFKyfeQb9XMKKv-wLemwxkOhMuftiNb6Q3A"/>
+</div>
+<div class="relative z-10 max-w-lg">
+<h1 class="font-display-xl text-white mb-md leading-tight">Elevate Academic Excellence.</h1>
+<p class="font-body-lg text-white/80 mb-lg">Join the intelligent ecosystem designed to streamline institutional management and student success in a unified cloud OS.</p>
+<div class="grid grid-cols-2 gap-md">
+<div class="glass-effect p-md rounded-xl border-white/10">
+<span class="material-symbols-outlined text-white mb-2" data-icon="verified_user">verified_user</span>
+<h3 class="font-headline-sm text-white text-sm">Enterprise Security</h3>
+<p class="font-body-sm text-white/70">AES-256 encrypted institutional data storage.</p>
+</div>
+<div class="glass-effect p-md rounded-xl border-white/10">
+<span class="material-symbols-outlined text-white mb-2" data-icon="hub">hub</span>
+<h3 class="font-headline-sm text-white text-sm">Smart Integration</h3>
+<p class="font-body-sm text-white/70">Seamless connection with legacy campus systems.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Signup Form Section -->
+<section class="w-full md:w-1/2 flex items-center justify-center p-8 md:p-xl bg-surface">
+<div class="w-full max-w-md">
+<div class="mb-lg">
+<h2 class="font-display-lg text-on-surface mb-2">Create Your Account</h2>
+<p class="font-body-md text-on-secondary-container">Enter your details to join the CampusOS community.</p>
+</div>
+<form class="space-y-md">
+<!-- Name -->
+<div class="space-y-xs">
+<label class="font-label-md text-secondary block" for="full_name">Full Name</label>
+<input class="w-full px-md py-sm rounded-lg border-outline-variant bg-white focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body-md outline-none" id="full_name" placeholder="Dr. Alexander Wright" type="text"/>
+</div>
+<!-- Email -->
+<div class="space-y-xs">
+<label class="font-label-md text-secondary block" for="email">Institutional Email</label>
+<input class="w-full px-md py-sm rounded-lg border-outline-variant bg-white focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body-md outline-none" id="email" placeholder="a.wright@university.edu" type="email"/>
+</div>
+<!-- Role Selection -->
+<div class="space-y-xs">
+<label class="font-label-md text-secondary block">Institutional Role</label>
+<div class="grid grid-cols-3 gap-sm">
+<label class="cursor-pointer">
+<input class="peer sr-only" name="role" type="radio" value="student"/>
+<div class="p-sm text-center border border-outline-variant rounded-lg peer-checked:bg-secondary-container peer-checked:border-primary transition-all font-body-sm text-secondary">
+                                    Student
+                                </div>
+</label>
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="role" type="radio" value="faculty"/>
+<div class="p-sm text-center border border-outline-variant rounded-lg peer-checked:bg-secondary-container peer-checked:border-primary transition-all font-body-sm text-secondary">
+                                    Faculty
+                                </div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="role" type="radio" value="admin"/>
+<div class="p-sm text-center border border-outline-variant rounded-lg peer-checked:bg-secondary-container peer-checked:border-primary transition-all font-body-sm text-secondary">
+                                    Admin
+                                </div>
+</label>
+</div>
+</div>
+<!-- Passwords -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="space-y-xs">
+<label class="font-label-md text-secondary block" for="password">Password</label>
+<input class="w-full px-md py-sm rounded-lg border-outline-variant bg-white focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body-md outline-none" id="password" placeholder="••••••••" type="password"/>
+</div>
+<div class="space-y-xs">
+<label class="font-label-md text-secondary block" for="confirm_password">Confirm</label>
+<input class="w-full px-md py-sm rounded-lg border-outline-variant bg-white focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body-md outline-none" id="confirm_password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- Terms -->
+<div class="flex items-start gap-sm py-2">
+<input class="mt-1 w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" id="terms" type="checkbox"/>
+<label class="font-body-sm text-on-secondary-container" for="terms">
+                            I agree to the <a class="text-primary hover:underline" href="#">Terms of Service</a> and <a class="text-primary hover:underline" href="#">Privacy Policy</a>.
+                        </label>
+</div>
+<!-- Submit -->
+<button class="w-full py-md bg-primary-container text-on-primary-container font-headline-sm rounded-xl shadow-lg shadow-blue-900/10 hover:brightness-110 active:scale-[0.98] transition-all" type="submit">
+                        Create Account
+                    </button>
+</form>
+<!-- Footer Links -->
+<div class="mt-lg text-center space-y-md">
+<p class="font-body-md text-on-secondary-container">
+                        Already have an account? 
+                        <a class="text-primary font-semibold hover:underline" href="#">Log in</a>
+</p>
+<!-- Trust Badges -->
+<div class="flex items-center justify-center gap-md pt-md border-t border-surface-container-highest">
+<div class="flex items-center gap-1 text-on-secondary-container opacity-60">
+<span class="material-symbols-outlined text-[16px]" data-icon="lock">lock</span>
+<span class="font-label-sm">SSL SECURED</span>
+</div>
+<div class="flex items-center gap-1 text-on-secondary-container opacity-60">
+<span class="material-symbols-outlined text-[16px]" data-icon="database">database</span>
+<span class="font-label-sm">ENCRYPTED DATA</span>
+</div>
+<div class="flex items-center gap-1 text-on-secondary-container opacity-60">
+<span class="material-symbols-outlined text-[16px]" data-icon="gpp_good">gpp_good</span>
+<span class="font-label-sm">HIPAA COMPLIANT</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Component -->
+<footer class="bg-slate-50 border-t border-slate-200 w-full py-8">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto w-full gap-4">
+<span class="text-lg font-black text-slate-900 font-headline-md">CampusOS</span>
+<p class="font-['Space_Grotesk'] text-xs uppercase tracking-widest text-slate-400">© 2024 CampusOS. Intelligent Campus Management.</p>
+<div class="flex gap-6">
+<a class="font-['Space_Grotesk'] text-xs uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors" href="#">Privacy Policy</a>
+<a class="font-['Space_Grotesk'] text-xs uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors" href="#">Terms of Service</a>
+<a class="font-['Space_Grotesk'] text-xs uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors" href="#">Security</a>
+</div>
+</div>
+</footer>
+</body></html>

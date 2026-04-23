@@ -29,25 +29,25 @@ export const TimetablePage = () => {
     <div className="p-12 max-w-7xl mx-auto">
       <header className="mb-12 flex justify-between items-end">
         <div>
-          <h1 className="text-5xl font-black tracking-tight mb-2">Hyper-Scheduler</h1>
-          <p className="text-white/30 text-lg">Genetic Algorithms for real-time conflict resolution.</p>
+          <h1 className="text-5xl font-bold tracking-tight mb-2 text-[#191c1e]">Hyper-Scheduler</h1>
+          <p className="text-[#727786] text-lg">Genetic Algorithms for real-time conflict resolution.</p>
         </div>
         <button 
           onClick={runHyperScheduler}
-          className="px-8 py-4 bg-white text-black rounded-2xl font-black text-sm transition-all hover:scale-[1.02] active:scale-95"
+          className="px-8 py-4 bg-white border border-[#e2e8f0] text-[#191c1e] rounded-2xl font-bold text-sm transition-all hover:bg-[#f8fafc] active:scale-95 shadow-sm"
         >
           {optimizing ? 'RESOLVING CONFLICTS...' : 'OPTIMIZE TIMETABLE'}
         </button>
       </header>
       <div className="grid gap-4">
         {schedule.map((s, i) => (
-          <div key={i} className={`p-6 rounded-2xl border ${s.conflict ? 'bg-red-500/5 border-red-500/20' : 'bg-[#0f0f0f] border-white/5'} flex justify-between items-center transition-all`}>
+          <div key={i} className={`p-6 rounded-2xl border ${s.conflict ? 'bg-rose-50 border-rose-100' : 'bg-white border-[#e2e8f0]'} flex justify-between items-center transition-all shadow-sm`}>
             <div>
-              <p className="text-xs font-bold text-white/40 mb-1">{s.time}</p>
-              <h3 className="text-xl font-black">{s.course}</h3>
+              <p className="text-xs font-bold text-[#727786] mb-1">{s.time}</p>
+              <h3 className="text-xl font-bold text-[#191c1e]">{s.course}</h3>
             </div>
             <div className="text-right">
-              <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${s.conflict ? 'bg-red-500/20 text-red-400' : 'bg-white/10'}`}>
+              <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${s.conflict ? 'bg-rose-100 text-rose-600' : 'bg-[#f1f5f9] text-[#424655]'}`}>
                 {s.conflict ? 'Conflict Detected' : s.room}
               </span>
             </div>

@@ -81,14 +81,14 @@ export const RoleAwareDashboard = ({ role, brainEvents }: { role: string, brainE
     <div className="p-12 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-500">
       <header className="mb-12">
         <div className="flex items-center gap-2 mb-2">
-          <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded uppercase tracking-widest">{role} VIEW</span>
+          <span className="px-2 py-0.5 bg-blue-500/10 text-blue-600 text-[10px] font-bold rounded uppercase tracking-widest">{role} VIEW</span>
         </div>
-        <h1 className="text-5xl font-black tracking-tight mb-2">Personal AI Control Panel</h1>
-        <div className="mt-6 p-4 bg-indigo-500/10 border border-indigo-500/30 rounded-2xl inline-flex items-center gap-4">
-          <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+        <h1 className="text-5xl font-bold tracking-tight mb-2 text-[#191c1e]">Personal AI Control Panel</h1>
+        <div className="mt-6 p-4 bg-white border border-[#e2e8f0] rounded-2xl inline-flex items-center gap-4 shadow-sm">
+          <div className="w-10 h-10 bg-[#066BF0] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
             <Zap className="text-white" size={20} />
           </div>
-          <p className="text-white/90 text-lg font-bold">{dashboardData.ai_message}</p>
+          <p className="text-[#424655] text-lg font-semibold">{dashboardData.ai_message}</p>
         </div>
       </header>
 
@@ -98,25 +98,25 @@ export const RoleAwareDashboard = ({ role, brainEvents }: { role: string, brainE
       {/* Dynamic Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
         {dashboardData.metrics?.map((stat: any, i: number) => (
-           <div key={i} className="bg-[#0f0f0f] border border-white/5 p-8 rounded-[2.5rem] hover:border-white/10 transition-colors">
-             <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em] mb-4">{stat.label}</p>
-             <h2 className={`text-4xl font-black ${stat.color}`}>{stat.value}</h2>
+           <div key={i} className="bg-white border border-[#e2e8f0] p-8 rounded-3xl hover:border-blue-500/30 transition-all shadow-sm premium-shadow">
+             <p className="text-[#727786] text-[10px] font-black uppercase tracking-[0.3em] mb-4">{stat.label}</p>
+             <h2 className={`text-4xl font-bold ${stat.color.replace('text-', 'text-opacity-90 text-')}`}>{stat.value}</h2>
            </div>
         ))}
       </div>
 
-      <h2 className="text-2xl font-black mb-6">AI Decisions & Insights</h2>
+      <h2 className="text-2xl font-bold mb-6 text-[#191c1e]">AI Decisions & Insights</h2>
       
       {/* AI Card System */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         {dashboardData.ai_cards?.map((card: any, i: number) => (
-          <div key={i} className={`p-8 rounded-[2.5rem] border ${card.type === 'danger' ? 'bg-rose-500/5 border-rose-500/20' : card.type === 'warning' ? 'bg-amber-500/5 border-amber-500/20' : 'bg-indigo-500/5 border-indigo-500/20'} flex flex-col justify-between`}>
+          <div key={i} className={`p-8 rounded-3xl border ${card.type === 'danger' ? 'bg-rose-50 border-rose-100' : card.type === 'warning' ? 'bg-amber-50 border-amber-100' : 'bg-blue-50 border-blue-100'} flex flex-col justify-between shadow-sm`}>
             <div>
-              <h3 className={`text-xs font-black uppercase tracking-widest mb-4 ${card.type === 'danger' ? 'text-rose-400' : card.type === 'warning' ? 'text-amber-400' : 'text-indigo-400'}`}>{card.title}</h3>
-              <p className="text-xl font-medium text-white/90 mb-8">{card.content}</p>
+              <h3 className={`text-xs font-black uppercase tracking-widest mb-4 ${card.type === 'danger' ? 'text-rose-600' : card.type === 'warning' ? 'text-amber-600' : 'text-blue-600'}`}>{card.title}</h3>
+              <p className="text-xl font-semibold text-[#191c1e] mb-8">{card.content}</p>
             </div>
             {card.action && (
-              <button className={`self-start px-6 py-3 font-bold text-sm rounded-xl transition-transform hover:scale-105 shadow-xl ${card.type === 'danger' ? 'bg-rose-500 text-white shadow-rose-500/20' : card.type === 'warning' ? 'bg-amber-500 text-black shadow-amber-500/20' : 'bg-white text-black shadow-white/10'}`}>
+              <button className={`self-start px-6 py-3 font-bold text-sm rounded-xl transition-all hover:scale-105 shadow-md ${card.type === 'danger' ? 'bg-rose-600 text-white shadow-rose-600/20' : card.type === 'warning' ? 'bg-amber-500 text-white shadow-amber-500/20' : 'bg-[#066BF0] text-white shadow-blue-500/20'}`}>
                 {card.action}
               </button>
             )}
@@ -126,16 +126,16 @@ export const RoleAwareDashboard = ({ role, brainEvents }: { role: string, brainE
 
       {/* Role Specific Sections */}
       {role === 'student' && dashboardData.today_plan && (
-        <div className="bg-[#0f0f0f] border border-white/5 rounded-[2.5rem] p-10">
-          <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
-            <div className="p-2 bg-indigo-500/20 rounded-xl"><Calendar className="text-indigo-400" size={24} /></div>
+        <div className="bg-white border border-[#e2e8f0] rounded-3xl p-10 shadow-sm">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-[#191c1e]">
+            <div className="p-2 bg-blue-50 rounded-xl"><Calendar className="text-blue-600" size={24} /></div>
             AI Daily Optimization Plan
           </h2>
           <div className="space-y-4">
             {dashboardData.today_plan.map((plan: any, i: number) => (
-              <div key={i} className="flex items-center gap-6 p-5 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors">
-                <span className="text-xs font-black text-indigo-400 tracking-wider w-24">{plan.time}</span>
-                <p className="font-bold text-white/90 text-lg">{plan.task}</p>
+              <div key={i} className="flex items-center gap-6 p-5 bg-[#f8fafc] rounded-2xl hover:bg-blue-50 transition-colors border border-transparent hover:border-blue-100">
+                <span className="text-xs font-black text-blue-600 tracking-wider w-24">{plan.time}</span>
+                <p className="font-bold text-[#424655] text-lg">{plan.task}</p>
               </div>
             ))}
           </div>
@@ -143,19 +143,19 @@ export const RoleAwareDashboard = ({ role, brainEvents }: { role: string, brainE
       )}
 
       {role === 'instructor' && dashboardData.at_risk_students && (
-        <div className="bg-[#0f0f0f] border border-white/5 rounded-[2.5rem] p-10">
-          <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
-            <div className="p-2 bg-rose-500/20 rounded-xl"><AlertTriangle className="text-rose-400" size={24} /></div>
+        <div className="bg-white border border-[#e2e8f0] rounded-3xl p-10 shadow-sm">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-[#191c1e]">
+            <div className="p-2 bg-rose-50 rounded-xl"><AlertTriangle className="text-rose-600" size={24} /></div>
             At-Risk Students
           </h2>
           <div className="space-y-4">
             {dashboardData.at_risk_students.map((student: any, i: number) => (
-              <div key={i} className="flex justify-between items-center p-5 bg-rose-500/5 border border-rose-500/20 rounded-2xl hover:bg-rose-500/10 transition-colors">
+              <div key={i} className="flex justify-between items-center p-5 bg-rose-50 border border-rose-100 rounded-2xl hover:bg-rose-100 transition-colors">
                 <div>
-                  <p className="font-black text-lg">{student.name}</p>
-                  <p className="text-sm font-bold text-rose-400 mt-1">{student.issue}</p>
+                  <p className="font-bold text-lg text-[#191c1e]">{student.name}</p>
+                  <p className="text-sm font-semibold text-rose-600 mt-1">{student.issue}</p>
                 </div>
-                <button className="px-6 py-3 bg-rose-500 text-white text-sm font-black rounded-xl hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/20">
+                <button className="px-6 py-3 bg-rose-600 text-white text-sm font-black rounded-xl hover:bg-rose-700 transition-colors shadow-lg shadow-rose-600/20">
                   {student.action}
                 </button>
               </div>

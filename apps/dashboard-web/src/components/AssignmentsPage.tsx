@@ -26,22 +26,22 @@ export const AssignmentsPage = () => {
     <div className="p-12 max-w-7xl mx-auto">
       <header className="mb-12 flex justify-between items-end">
         <div>
-          <h1 className="text-5xl font-black tracking-tight mb-2">Auto-Grading Brain</h1>
-          <p className="text-white/30 text-lg">NLP + Code Execution Sandbox</p>
+          <h1 className="text-5xl font-bold tracking-tight mb-2 text-[#191c1e]">Auto-Grading Brain</h1>
+          <p className="text-[#727786] text-lg">NLP + Code Execution Sandbox</p>
         </div>
         <button 
           onClick={runAutoGrader}
-          className="group relative px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-indigo-500/20"
+          className="group relative px-8 py-4 bg-[#066BF0] text-white rounded-2xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-blue-500/20"
         >
           {analyzing ? 'ANALYZING SUBMISSIONS...' : 'INVOKE AUTO-GRADER'}
         </button>
       </header>
 
       {results.length > 0 && (
-        <div className="bg-[#0f0f0f] border border-white/5 rounded-[2.5rem] overflow-hidden animate-in slide-in-from-bottom-4">
+        <div className="bg-white border border-[#e2e8f0] rounded-3xl overflow-hidden animate-in slide-in-from-bottom-4 shadow-sm">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-white/5 text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">
+              <tr className="border-b border-[#e2e8f0] bg-[#f8fafc] text-[#727786] text-[10px] font-black uppercase tracking-[0.3em]">
                 <th className="p-8">Assignment</th>
                 <th className="p-8">AI Score</th>
                 <th className="p-8">Plagiarism Risk</th>
@@ -50,15 +50,15 @@ export const AssignmentsPage = () => {
             </thead>
             <tbody className="text-sm">
               {results.map((r, i) => (
-                <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                  <td className="p-8 font-bold">{r.name}</td>
-                  <td className="p-8 font-black text-emerald-400">{r.score}%</td>
+                <tr key={i} className="border-b border-[#e2e8f0] hover:bg-[#f8fafc] transition-colors">
+                  <td className="p-8 font-bold text-[#191c1e]">{r.name}</td>
+                  <td className="p-8 font-black text-emerald-600">{r.score}%</td>
                   <td className="p-8">
-                    <span className={`px-3 py-1 rounded-lg font-bold text-[10px] ${r.plagiarism > 10 ? 'bg-red-500/20 text-red-400' : 'bg-white/5'}`}>
+                    <span className={`px-3 py-1 rounded-lg font-bold text-[10px] ${r.plagiarism > 10 ? 'bg-rose-50 text-rose-600' : 'bg-[#f1f5f9] text-[#424655]'}`}>
                       {r.plagiarism}%
                     </span>
                   </td>
-                  <td className="p-8 text-white/40">{r.status}</td>
+                  <td className="p-8 text-[#727786] font-semibold">{r.status}</td>
                 </tr>
               ))}
             </tbody>

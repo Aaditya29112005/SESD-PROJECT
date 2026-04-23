@@ -20,21 +20,21 @@ import { useBrainFeed } from './hooks/useBrainFeed';
 // --- DEMO ROLE SWITCHER ---
 const DemoRoleSwitcher = ({ role, setRole }: { role: string, setRole: (r: string) => void }) => {
   const roles = [
-    { id: 'student', label: '🎓 Student', color: 'hover:bg-white/10' },
-    { id: 'instructor', label: '👨‍🏫 Instructor', color: 'hover:bg-indigo-500/20' },
-    { id: 'superadmin', label: '👑 Super Admin', color: 'hover:bg-rose-500/20' },
+    { id: 'student', label: '🎓 Student', color: 'hover:bg-blue-50' },
+    { id: 'instructor', label: '👨‍🏫 Instructor', color: 'hover:bg-blue-50' },
+    { id: 'superadmin', label: '👑 Super Admin', color: 'hover:bg-blue-50' },
   ];
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[90] flex items-center gap-1 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-1 shadow-2xl">
-      <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] px-3">DEMO</span>
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[90] flex items-center gap-1 bg-white/80 backdrop-blur-xl border border-[#e2e8f0] rounded-2xl p-1 shadow-2xl">
+      <span className="text-[9px] font-black text-[#727786] uppercase tracking-[0.3em] px-3">DEMO</span>
       {roles.map(r => (
         <button
           key={r.id}
           onClick={() => setRole(r.id)}
-          className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             role === r.id
-              ? 'bg-white text-black shadow-lg'
-              : `text-white/50 ${r.color}`
+              ? 'bg-[#066BF0] text-white shadow-lg shadow-blue-500/20'
+              : `text-[#424655] ${r.color}`
           }`}
         >
           {r.label}
@@ -51,15 +51,15 @@ const Layout = ({ children, user, setUser, role, setRole }: { children: React.Re
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] flex text-white antialiased selection:bg-indigo-500/30">
-      <aside className="w-72 border-r border-white/5 flex flex-col p-8 sticky top-0 h-screen">
+    <div className="min-h-screen bg-[#f7f9fb] flex text-[#191c1e] antialiased selection:bg-blue-500/10">
+      <aside className="w-72 glass flex flex-col p-8 sticky top-0 h-screen z-50">
         <div className="flex items-center gap-3 mb-12">
-          <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/20">
+          <div className="w-12 h-12 bg-[#066BF0] rounded-2xl flex items-center justify-center shadow-xl shadow-blue-500/30">
             <Zap className="text-white" size={26} fill="white" />
           </div>
           <div>
-            <span className="font-black text-2xl tracking-tighter block leading-none">CAMPUSOS</span>
-            <span className="text-[10px] font-bold text-indigo-500 tracking-[0.3em]">VERSION X</span>
+            <span className="font-bold text-2xl tracking-tighter block leading-none text-white">CAMPUSOS</span>
+            <span className="text-[10px] font-black text-blue-400 tracking-[0.3em]">VERSION X</span>
           </div>
         </div>
         
@@ -79,7 +79,7 @@ const Layout = ({ children, user, setUser, role, setRole }: { children: React.Re
             <div className="mb-4 flex items-center gap-3 p-3 bg-white/5 rounded-2xl">
               <img src={user.picture || `https://ui-avatars.com/api/?name=${user.name}`} alt="avatar" className="w-10 h-10 rounded-xl" />
               <div className="flex-1 overflow-hidden">
-                <p className="text-sm font-bold truncate">{user.name}</p>
+                <p className="text-sm font-bold truncate text-white">{user.name}</p>
                 <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest truncate">{role}</p>
               </div>
               <button onClick={handleLogout} className="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-lg">
@@ -87,16 +87,16 @@ const Layout = ({ children, user, setUser, role, setRole }: { children: React.Re
               </button>
             </div>
           )}
-          <div className="p-5 bg-indigo-600/5 border border-indigo-500/10 rounded-[2rem]">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
-              <p className="text-[9px] text-indigo-400 font-black uppercase tracking-[0.2em]">MESH_ACTIVE</p>
+          <div className="p-5 bg-blue-500/10 border border-blue-500/20 rounded-2xl">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+              <p className="text-[9px] text-blue-300 font-black uppercase tracking-[0.2em]">MESH_ACTIVE</p>
             </div>
             <p className="text-xs font-medium text-white/80 leading-relaxed">Neural Engine processing 12.4k events/sec</p>
           </div>
         </div>
       </aside>
-      <main className="flex-1 relative">
+      <main className="flex-1 relative bg-white/50">
         {children}
         <CampusGPT />
         <DemoRoleSwitcher role={role} setRole={setRole} />
