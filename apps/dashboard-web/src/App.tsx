@@ -13,11 +13,12 @@ import { AssignmentsPage } from './components/AssignmentsPage';
 import { TimetablePage } from './components/TimetablePage';
 import { NotificationsPage } from './components/NotificationsPage';
 import { SettingsPage } from './components/SettingsPage';
+import { LoginPage } from './components/LoginPage';
 
 // --- HOOKS ---
 import { useBrainFeed } from './hooks/useBrainFeed';
 
-// --- DEMO ROLE SWITCHER ---
+// --- DEMO ROLE SWITCHER (Visible in dev/demo mode) ---
 const DemoRoleSwitcher = ({ role, setRole }: { role: string, setRole: (r: string) => void }) => {
   const roles = [
     { id: 'student', label: '🎓 Student', color: 'hover:bg-blue-50' },
@@ -58,8 +59,8 @@ const Layout = ({ children, user, setUser, role, setRole }: { children: React.Re
             <Zap className="text-white" size={26} fill="white" />
           </div>
           <div>
-            <span className="font-bold text-2xl tracking-tighter block leading-none text-white">CAMPUSOS</span>
-            <span className="text-[10px] font-black text-blue-400 tracking-[0.3em]">VERSION X</span>
+            <span className="font-bold text-2xl tracking-tighter block leading-none text-white font-['Space_Grotesk'] uppercase">CAMPUSOS</span>
+            <span className="text-[10px] font-black text-blue-400 tracking-[0.3em] font-['Space_Grotesk']">VERSION ∞</span>
           </div>
         </div>
         
@@ -76,27 +77,27 @@ const Layout = ({ children, user, setUser, role, setRole }: { children: React.Re
         
         <div className="mt-auto">
           {user && (
-            <div className="mb-4 flex items-center gap-3 p-3 bg-white/5 rounded-2xl">
-              <img src={user.picture || `https://ui-avatars.com/api/?name=${user.name}`} alt="avatar" className="w-10 h-10 rounded-xl" />
+            <div className="mb-4 flex items-center gap-3 p-3 bg-white border border-[#e2e8f0] rounded-2xl shadow-sm">
+              <img src={user.picture || `https://ui-avatars.com/api/?name=${user.name}&background=066BF0&color=fff`} alt="avatar" className="w-10 h-10 rounded-xl" />
               <div className="flex-1 overflow-hidden">
-                <p className="text-sm font-bold truncate text-white">{user.name}</p>
-                <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest truncate">{role}</p>
+                <p className="text-sm font-bold truncate text-[#191c1e]">{user.name}</p>
+                <p className="text-[10px] text-[#727786] font-bold uppercase tracking-widest truncate">{role}</p>
               </div>
-              <button onClick={handleLogout} className="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-lg">
+              <button onClick={handleLogout} className="p-2 text-[#727786] hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
                 <LogOut size={16} />
               </button>
             </div>
           )}
-          <div className="p-5 bg-blue-500/10 border border-blue-500/20 rounded-2xl">
+          <div className="p-5 bg-[#263040] rounded-2xl text-white">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+              <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]"></div>
               <p className="text-[9px] text-blue-300 font-black uppercase tracking-[0.2em]">MESH_ACTIVE</p>
             </div>
-            <p className="text-xs font-medium text-white/80 leading-relaxed">Neural Engine processing 12.4k events/sec</p>
+            <p className="text-[10px] font-medium text-white/60 leading-relaxed uppercase tracking-tighter">Neural Engine v4.2.1-stable</p>
           </div>
         </div>
       </aside>
-      <main className="flex-1 relative bg-white/50">
+      <main className="flex-1 relative bg-white/50 overflow-y-auto">
         {children}
         <CampusGPT />
         <DemoRoleSwitcher role={role} setRole={setRole} />
@@ -106,9 +107,18 @@ const Layout = ({ children, user, setUser, role, setRole }: { children: React.Re
 };
 
 function App() {
-  const [user, setUser] = useState<any>({ name: 'Demo User', email: 'demo@university.edu' });
+  const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState('student');
   const { brainEvents } = useBrainFeed();
+
+  const handleLogin = (userData: any, selectedRole: string) => {
+    setUser(userData);
+    setRole(selectedRole);
+  };
+
+  if (!user) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
 
   return (
     <Router>
